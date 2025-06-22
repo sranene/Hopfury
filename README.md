@@ -1,6 +1,6 @@
 # Hopfury
 
-**Hopfury** is a 2D mobile platformer where you jump over platforms and enemies, shoot fireballs to defeat foes (with cooldown), and enjoy the unique beats of each level. Simple controls, satisfying action, and a retro aesthetic make it both fun and engaging.
+**Hopfury** is a 2D mobile platformer where you jump over platforms and enemies, shoot fireballs to defeat enemys (with cooldown), and enjoy the unique beats of each level. Simple controls, satisfying action, and a simple and clean design make it both fun and engaging.
 
 ## 🎮 Gameplay
 
