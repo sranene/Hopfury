@@ -1,18 +1,14 @@
-# Unity
-[Linha de base para Unity]
-[Linha de base para Unity]
-[Linha de base para Unity]
-[Linha de base para Unity]
-[Linha de base para Unity]
+# Unity generated folders
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+Logs/
+MemoryCaptures/
+UserSettings/
 
-# Ignorar pastas e ficheiros gerados automaticamente
-[Linha de base para Unity]
-[Linha de base para Unity]
-[Linha de base para Unity]
-[Linha de base para Unity]
-[Linha de base para Unity]
-
-# VS/IDE
+# Visual Studio / JetBrains
 .vs/
 *.csproj
 *.unityproj
@@ -21,11 +17,21 @@
 *.user
 *.userprefs
 
-# Sistema operativo
+# OS
 .DS_Store
 Thumbs.db
 
-# Outros ficheiros grandes ou irrelevantes
+# Packages
+Packages/com.unity.*
+Packages/manifest.json
+
+# Unity Cloud Build
+.cloud/
+
+# Crashlytics
+crashlytics-build.properties
+
+# Outros ficheiros grandes
 *.apk
 *.aab
 *.log

@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.EnhancedTouch;
 using FingerNew = UnityEngine.InputSystem.EnhancedTouch.Finger;
 
-public class BallControl : MonoBehaviour {
+public class SquareControl : MonoBehaviour {
     
     [SerializeField]
     private Rigidbody2D rb = null;
@@ -672,13 +672,13 @@ public class BallControl : MonoBehaviour {
         else if(!isDead && col.gameObject.name == "FinishBottom") // When the ball jumps on the finish platform
         {
             GameObject.Find("GameManager").GetComponent<Menus>().LevelComplete();
-            GetComponent<BallControl>().enabled = false;
+            GetComponent<SquareControl>().enabled = false;
             GameObject.Find("LevelCompleteSound").GetComponent<AudioSource>().Play();
 
         } else if(!isDead && col.gameObject.name == "FinishTutorial") // When the ball jumps on the finish platform
         {
             GameObject.Find("GameManager").GetComponent<Menus>().LevelComplete();
-            GetComponent<BallControl>().enabled = false;
+            GetComponent<SquareControl>().enabled = false;
             GameObject.Find("LevelCompleteSound").GetComponent<AudioSource>().Play();
 
         }
