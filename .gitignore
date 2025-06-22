@@ -1,0 +1,31 @@
+# Unity
+[Linha de base para Unity]
+[Linha de base para Unity]
+[Linha de base para Unity]
+[Linha de base para Unity]
+[Linha de base para Unity]
+
+# Ignorar pastas e ficheiros gerados automaticamente
+[Linha de base para Unity]
+[Linha de base para Unity]
+[Linha de base para Unity]
+[Linha de base para Unity]
+[Linha de base para Unity]
+
+# VS/IDE
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Outros ficheiros grandes ou irrelevantes
+*.apk
+*.aab
+*.log

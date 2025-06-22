@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &4119962323251008972
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1604844303736564257, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a6071ca79bb47d843a3d8ba5eaa1a44e,
+        type: 3}
+    - target: {fileID: 3408093711305050146, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_Name
+      value: Poker Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653653356390322331, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f8d81681ca1f3fb4da0d51bbb592e78c, type: 3}
+--- !u!1 &1614242274932825582 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3408093711305050146, guid: f8d81681ca1f3fb4da0d51bbb592e78c,
+    type: 3}
+  m_PrefabInstance: {fileID: 4119962323251008972}
+  m_PrefabAsset: {fileID: 0}
+--- !u!60 &3178071353270681472
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614242274932825582}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.48, y: 1.46}
+    newSize: {x: 0.48, y: 1.46}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.10619147, y: 0.6794517}
+      - {x: -0.22768742, y: 0.48483616}
+      - {x: -0.2274801, y: -0.72999996}
+      - {x: 0.22748008, y: -0.72999996}
+      - {x: 0.23066844, y: 0.49864465}
+      - {x: 0.10608205, y: 0.6811367}
