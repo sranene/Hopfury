@@ -58,7 +58,7 @@ public class SnailBehaviour : MonoBehaviour
         if (!coroutineStarted && Mathf.Approximately(moveSpeed, 0.9f))
         {
             coroutineStarted = true;
-            StartCoroutine(StopAfterSeconds(5f)); // só começa após estar visível
+            StartCoroutine(StopAfterSeconds(6f)); // só começa após estar visível
         }
     }
 

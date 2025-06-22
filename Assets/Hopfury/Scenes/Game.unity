@@ -357,11 +357,13 @@ MonoBehaviour:
   - Booster ahead! Tap to jump on it, and it will launch you higher.
   - Pick up diamonds along the way, just for fun!
   - "You made it! Now you\u2019re ready to take on the real challenge."
-  - 8888888888888
-  - 999999999999999
-  - 10000000000
-  - 111111 1111
-  - 111111 2222222
+  - "Hey! Almost forgot \u2014 there's one more mechanic you need to learn."
+  - To deal with enemies like this snail, swipe up to launch a fireball.
+  - That angry look? It means you need to wait.. your fireball is still on cooldown.
+  - Nice! Now you can take him down.
+  - "You\u2019ll face other enemies too, such as slimes."
+  - And the fly? It's almost impossible to kill. Just keep your distance.
+  - That's it! You're ready to continue your adventure.
 --- !u!1 &116949413
 GameObject:
   m_ObjectHideFlags: 0

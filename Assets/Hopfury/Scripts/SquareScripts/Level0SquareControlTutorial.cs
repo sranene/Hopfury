@@ -203,19 +203,6 @@ public class Level0SquareControlTutorial : MonoBehaviour
         counter++;
     }
 
-    private void TriggerSwipeDialogueStep()
-    {
-        waitingForSwipe = true;
-        StopSquareVelocity();
-        Menus menus = GameObject.Find("GameManager").GetComponent<Menus>();
-        if (menus != null)
-        {
-            menus.ShowDialogue(counter);
-            menus.ShowSwipeHint();
-        }
-        counter++;
-    }
-
     private void HideTutorialUI()
     {
         waitingForTap = false;
@@ -650,22 +637,10 @@ public class Level0SquareControlTutorial : MonoBehaviour
             isDead = true;
             StartCoroutine(DeathSequence());
         }
-        else if (!isDead && col.gameObject.CompareTag("Lock")) //  Verifica se a colisão foi com o lock
-        {
-            isDead = true;
-            StartCoroutine(DeathSequence());
-        }
         else if (!isDead && col.gameObject.name == "BottomCollider") // When the ball falls from the platform and hits the bottom collider the game is over
         {
             isDead = true;
             StartCoroutine(DeathSequence());
-        }
-        else if (!isDead && col.gameObject.name == "FinishBottom") // When the ball jumps on the finish platform
-        {
-            GameObject.Find("GameManager").GetComponent<Menus>().LevelComplete();
-            GetComponent<Level0SquareControlTutorial>().enabled = false;
-            GameObject.Find("LevelCompleteSound").GetComponent<AudioSource>().Play();
-
         }
         else if (!isDead && col.gameObject.name == "FinishTutorial") // When the ball jumps on the finish platform
         {

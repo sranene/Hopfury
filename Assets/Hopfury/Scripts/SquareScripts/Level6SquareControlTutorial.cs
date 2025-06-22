@@ -75,11 +75,12 @@ public class Level6SquareControlTutorial : MonoBehaviour
     private bool waitingForTap = false;
     private bool waitingForSwipe = false;
     private bool waitingtest = false;
-    private bool coroutineStarted = false;
+
+    private bool firstSwipe = false;
 
     bool isDead = false;
 
-    int counter = 0;
+    int counter = 8;
 
     private void Awake()
     {
@@ -238,28 +239,23 @@ public class Level6SquareControlTutorial : MonoBehaviour
             shouldBoost = false;
         }
 
-        if (Mathf.Abs(rb.position.x - 27) < 0.05f && counter == 1)
+        if (Mathf.Abs(rb.position.x - 23) < 0.05f && counter == 9)
+        {
+            TriggerSwipeDialogueStep();
+            firstSwipe = true;
+        }
+        else if (Mathf.Abs(rb.position.x - 45) < 0.05f && counter == 11)
+        {
+            TriggerSwipeDialogueStep();
+        }
+        else if (Mathf.Abs(rb.position.x - 115) < 0.05f && counter == 12)
+        {
+            TriggerSwipeDialogueStep();
+        }
+        else if (Mathf.Abs(rb.position.x - 130) < 0.05f && counter == 13)
         {
             TriggerTapDialogueStep();
         }
-        else if (Mathf.Abs(rb.position.x - 55.3f) < 0.05f && counter == 2)
-        {
-            TriggerTapDialogueStep();
-        }
-        else if (Mathf.Abs(rb.position.x - 84) < 0.05f && counter == 3 && !coroutineStarted)
-        {
-            coroutineStarted = true;
-            StartCoroutine(WaitASecondAndStop(2.6f));
-        }
-        else if (Mathf.Abs(rb.position.x - 104) < 0.05f && counter == 4)
-        {
-            TriggerTapDialogueStep();
-        }
-        else if (Mathf.Abs(rb.position.x - 136) < 0.05f && counter == 5)
-        {
-            TriggerTapDialogueStep();
-        }
-
 
     }
 
@@ -390,6 +386,11 @@ public class Level6SquareControlTutorial : MonoBehaviour
 
     public void OnTapGesture()
     {
+        if (fireballOnCooldown && firstSwipe)
+        {
+            Invoke(nameof(ResetFirstFireballCooldownPt2), 1f);
+            firstSwipe = false;
+        }
         SetBallVelocity();
         isJumping = true;
         if (canJump)
@@ -403,7 +404,13 @@ public class Level6SquareControlTutorial : MonoBehaviour
     {
         HideTutorialUI();
         SetBallVelocity();
-        TryLaunchFireball();
+        if (firstSwipe)
+        {
+            TryFirstLaunchFireball();
+        } else
+        {
+            TryLaunchFireball();
+        }
     }
 
     private void TryLaunchFireball()
@@ -425,6 +432,7 @@ public class Level6SquareControlTutorial : MonoBehaviour
         fireballSound.Play();
 
         Invoke(nameof(ResetFireballCooldown), fireballCooldown);
+
     }
 
     private void ResetFireballCooldown()
@@ -437,6 +445,45 @@ public class Level6SquareControlTutorial : MonoBehaviour
         }
     }
 
+    private void TryFirstLaunchFireball()
+    {
+        if (fireballOnCooldown)
+        {
+            GameSessionManager.Instance.LogToFile("Fireball attempt failed: on cooldown.");
+            return;
+        }
+        if (!isDead)
+        {
+            spriteRenderer.sprite = blockerMad;
+        }
+
+        GameObject fireballObj = Instantiate(fireballPrefab, firePoint.position, Quaternion.identity);
+        fireballObj.GetComponent<Fireball>().Launch(Vector2.right); // ou ajusta consoante o movimento
+
+        fireballOnCooldown = true;
+        fireballSound.Play();
+
+        Invoke(nameof(ResetFirstFireballCooldown), 1f);
+
+    }
+
+    private void ResetFirstFireballCooldown()
+    {
+        if (counter == 10)
+        {
+            TriggerTapDialogueStep();
+        }
+    }
+
+    private void ResetFirstFireballCooldownPt2()
+    {
+        rechargeFireParticle.Play();
+        fireballOnCooldown = false;
+        if (!isDead)
+        {
+            spriteRenderer.sprite = blockerHappy;
+        }
+    }
 
     private void Jump()
     {
@@ -478,13 +525,6 @@ public class Level6SquareControlTutorial : MonoBehaviour
 
         jumpSound.Play();
         jumpParticle.Play();
-
-        if (counter == 6)
-        {
-
-            StartCoroutine(WaitASecond(3f));
-
-        }
     }
 
 
