@@ -278,16 +278,15 @@ public class Menus : MonoBehaviour {
         gameplayUI.SetActive(true);
         levelCompleteUI.SetActive(false);
         tutorialCompleteUI.SetActive(false);
-        //diamondUI.SetActive(true);
+        diamondUI.SetActive(true);
         //pauseButton.SetActive(true);
 
         // Resetar os diamantes ao iniciar o nível
-        DiamondUIController diamondUI = FindObjectOfType<DiamondUIController>();
-        if (diamondUI != null)
+        DiamondUIController diamondUICont = FindObjectOfType<DiamondUIController>();
+        if (diamondUICont != null)
         {
-            diamondUI.ResetDiamonds();
+            diamondUICont.ResetDiamonds();
         }
-
     }
 
     public void LevelLoadAnimation () //This will start the fade in-fade out transition animation
@@ -324,15 +323,16 @@ public class Menus : MonoBehaviour {
         gameplayUI.SetActive(true);
         levelCompleteUI.SetActive(false);
         tutorialCompleteUI.SetActive(false);
-        //diamondUI.SetActive(true);
+        diamondUI.SetActive(true);
         //pauseButton.SetActive(true);
 
         // Resetar os diamantes ao iniciar o nível
-        DiamondUIController diamondUI = FindObjectOfType<DiamondUIController>();
+        DiamondUIController diamondUICont = FindObjectOfType<DiamondUIController>();
         if (diamondUI != null)
         {
-            diamondUI.ResetDiamonds();
+            diamondUICont.ResetDiamonds();
         }
+
     }
 
 
@@ -390,7 +390,7 @@ public class Menus : MonoBehaviour {
     public void ExitToMainMenu() 
     {
         HideLevelSelectMenu();
-        //diamondUI.SetActive(false);
+        diamondUI.SetActive(false);
         //pauseMenuUI.SetActive(false);
         levelCompleteUI.SetActive(false);
         gameOverMenuUI.SetActive(false);
@@ -426,7 +426,7 @@ public class Menus : MonoBehaviour {
     private void ShowLevelCompleteMenu() 
     {
         levelCompleteUI.SetActive(true);
-        //diamondUI.SetActive(false);
+        diamondUI.SetActive(false);
         //pauseButton.SetActive(false);
     }
 
@@ -513,6 +513,7 @@ public class Menus : MonoBehaviour {
     private void ShowGameOverMenu() 
     {
         AudioManager.Instance.StopBackgroundMusic();
+        diamondUI.SetActive(false);
         gameOverMenuUI.SetActive(true);
     }
 
