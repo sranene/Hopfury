@@ -11,6 +11,8 @@ using System.Linq;
 public class PlayerData
 {
     public string name;
+    public int levelUnlock = 0;
+    public int unlockNextLevel = 0;
     public List<SessionData> sessions = new List<SessionData>();
 }
 
@@ -172,28 +174,47 @@ public class GameSessionManager : MonoBehaviour
         pendingTaps.Add(tap);
     }
 
-    // Método para gravar informações no arquivo de log
-    public void LogToFile(string message)
+    public void IncrementLevelUnlock()
     {
-        try
+        if (currentPlayer != null)
         {
-            if (!File.Exists(logFilePath))
-            {
-                File.Create(logFilePath).Dispose(); // Cria e fecha imediatamente
-            }
-
-            using (StreamWriter writer = new StreamWriter(logFilePath, true))
-            {
-                writer.WriteLine($"{DateTime.Now}: {message}");
-            }
+            currentPlayer.levelUnlock++;
+            LogToFile($"[Progress] {currentPlayer.name} -> levelUnlock = {currentPlayer.levelUnlock}");
         }
-        catch (Exception e)
+        else
         {
-            LogToFile($"Failed to write to log file: {e.Message}");
+            LogToFile("[Progress] No current player found. Cannot increment levelsCompleted.");
         }
     }
 
-        // Guarda o tempo da morte na sessão atual
+    public PlayerData GetPlayer(string playerName)
+    {
+        if (playerList != null && playerList.players != null)
+        {
+            PlayerData foundPlayer = playerList.players.Find(p => p.name == playerName);
+
+            if (foundPlayer != null)
+            {
+                LogToFile($"[GetPlayer] Found player: {playerName}");
+                return foundPlayer;
+            }
+            else
+            {
+                LogToFile($"[GetPlayer] Player not found: {playerName}");
+                return null;
+            }
+        }
+        else
+        {
+            LogToFile("[GetPlayer] Player list is null or empty.");
+            return null;
+        }
+    }
+
+
+
+
+    // Guarda o tempo da morte na sessão atual
     public void SetTimeOfDeath()
     {
         if (currentSession == null)
@@ -279,7 +300,7 @@ public class GameSessionManager : MonoBehaviour
 
     private void SavePlayersToJson()
     {
-        string path = Path.Combine(Application.persistentDataPath, "DashlinePlayersData.json");
+        string path = Path.Combine(Application.persistentDataPath, "HopfuryPlayersData.json");
         string json = JsonUtility.ToJson(playerList, true);
         File.WriteAllText(path, json);
 
@@ -288,7 +309,7 @@ public class GameSessionManager : MonoBehaviour
 
     private void LoadPlayersFromJson()
     {
-        string path = Path.Combine(Application.persistentDataPath, "DashlinePlayersData.json");
+        string path = Path.Combine(Application.persistentDataPath, "HopfuryPlayersData.json");
 
         if (File.Exists(path))
         {
@@ -300,6 +321,27 @@ public class GameSessionManager : MonoBehaviour
         {
             LogToFile("No JSON file found, creating new player list.");
             playerList = new PlayerList();
+        }
+    }
+
+    // Método para gravar informações no arquivo de log
+    public void LogToFile(string message)
+    {
+        try
+        {
+            if (!File.Exists(logFilePath))
+            {
+                File.Create(logFilePath).Dispose(); // Cria e fecha imediatamente
+            }
+
+            using (StreamWriter writer = new StreamWriter(logFilePath, true))
+            {
+                writer.WriteLine($"{DateTime.Now}: {message}");
+            }
+        }
+        catch (Exception e)
+        {
+            LogToFile($"Failed to write to log file: {e.Message}");
         }
     }
 

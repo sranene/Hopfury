@@ -99,6 +99,8 @@ public class Menus : MonoBehaviour {
             // Feedback para o jogador
             GameSessionManager.Instance.LogToFile("Username updated to: " + newName);
             Debug.Log("Nome guardado nos PlayerPrefs: " + newName);
+            UpdatePlayerProgressFromJson(newName);
+
         }
         else
         {
@@ -106,8 +108,32 @@ public class Menus : MonoBehaviour {
         }
     }
 
-        /////////////
-        
+    private void UpdatePlayerProgressFromJson(string playerName)
+    {
+        PlayerData foundPlayer = GameSessionManager.Instance.GetPlayer(playerName);
+
+        if (foundPlayer != null)
+        {
+            // Usa o valor de levelsCompleted para atualizar os PlayerPrefs
+            PlayerPrefs.SetInt("LevelUnlock", foundPlayer.levelUnlock);
+            PlayerPrefs.Save();
+
+            GameSessionManager.Instance.LogToFile("Progress loaded for player: " + playerName + " | LevelUnlock: " + foundPlayer.levelUnlock);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("LevelUnlock", 0);
+            PlayerPrefs.Save();
+
+            GameSessionManager.Instance.LogToFile("New playerdefault level unlock: " + playerName + " | LevelUnlock: 0");
+        }
+
+        UpdateLevelButtons();
+    }
+
+
+    /////////////
+
 
     // Ativa o diálogo com o texto do índice 'index'
     public void ShowDialogue(int index)
@@ -382,6 +408,7 @@ public class Menus : MonoBehaviour {
         //ALTERAÇÃO
         if (GameSessionManager.Instance != null)
         {
+            GameSessionManager.Instance.IncrementLevelUnlock();
             GameSessionManager.Instance.EndCurrentSession();
         }
         //ALTERAÇÃO
