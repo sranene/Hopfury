@@ -67,6 +67,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player tutorial Variant 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6288469294536245680, guid: bb47748225d55b1499503ff952d05446,
+        type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6288469294536245680, guid: bb47748225d55b1499503ff952d05446,
+        type: 3}
+      propertyPath: ShapeModule.radiusThickness
+      value: 0.2
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2467214902666045677, guid: bb47748225d55b1499503ff952d05446, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: bb47748225d55b1499503ff952d05446, type: 3}

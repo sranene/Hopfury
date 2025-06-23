@@ -65,7 +65,12 @@ PrefabInstance:
     - target: {fileID: 2467214902666045676, guid: bb47748225d55b1499503ff952d05446,
         type: 3}
       propertyPath: m_Name
-      value: Player tutorial Variant
+      value: Player tutorial Variant 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6288469294536245680, guid: bb47748225d55b1499503ff952d05446,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 6288469294536245680, guid: bb47748225d55b1499503ff952d05446,
         type: 3}
@@ -89,8 +94,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6288469294536245680, guid: bb47748225d55b1499503ff952d05446,
         type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6288469294536245680, guid: bb47748225d55b1499503ff952d05446,
+        type: 3}
       propertyPath: ShapeModule.radiusThickness
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6288469294536245680, guid: bb47748225d55b1499503ff952d05446,
+        type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6288469294536245680, guid: bb47748225d55b1499503ff952d05446,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7104126355962634793, guid: bb47748225d55b1499503ff952d05446,
         type: 3}
