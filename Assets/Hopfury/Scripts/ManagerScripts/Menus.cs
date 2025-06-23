@@ -31,6 +31,8 @@ public class Menus : MonoBehaviour {
     public Slider volumeSlider;
     private AudioSource buttonSound;
     private AudioSource tutorialSound;
+    
+    private int totalLevels = 12;
 
     [SerializeField]
     private InputField playerNameInputField = null;
@@ -409,18 +411,18 @@ public class Menus : MonoBehaviour {
 
         if (allLevelsUnlocked)
         {
-            // Desbloqueia todos os níveis (níveis 0 a 9)
-            for (int i = 0; i < 10; i++)
+            // Desbloqueia todos os níveis (níveis 0 a 11)
+            for (int i = 0; i < totalLevels; i++)
             {
                 PlayerPrefs.SetInt($"Level{i}", 1);
             }
-            // Guarda o maior nível desbloqueado (pode usar 9)
-            PlayerPrefs.SetInt("LevelUnlock", 9);
+            // Guarda o maior nível desbloqueado
+            PlayerPrefs.SetInt("LevelUnlock", totalLevels - 1);
         }
         else
         {
             // Bloqueia todos exceto o nível 0
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i < totalLevels; i++)
             {
                 PlayerPrefs.SetInt($"Level{i}", 0);
             }
@@ -450,10 +452,12 @@ public class Menus : MonoBehaviour {
             }
 
             // Mostrar ou esconder o número do nível (Text ou TMP_Text)
-            Transform text = levelButtons[i].transform.Find("Text");
-            if (text != null)
+            foreach (Transform child in levelButtons[i].GetComponentsInChildren<Transform>(true))
             {
-                text.gameObject.SetActive(unlocked);
+                if (child.name == "Text")
+                {
+                    child.gameObject.SetActive(unlocked);
+                }
             }
 
         }
