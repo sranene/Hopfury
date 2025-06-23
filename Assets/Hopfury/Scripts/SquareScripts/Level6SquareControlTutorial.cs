@@ -233,26 +233,21 @@ public class Level6SquareControlTutorial : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (shouldBoost)
-        {
-            JumpBooster();
-            shouldBoost = false;
-        }
 
         if (Mathf.Abs(rb.position.x - 23) < 0.05f && counter == 9)
         {
             TriggerSwipeDialogueStep();
             firstSwipe = true;
         }
-        else if (Mathf.Abs(rb.position.x - 45) < 0.05f && counter == 11)
+        else if (Mathf.Abs(rb.position.x - 48) < 0.05f && counter == 11)
         {
             TriggerSwipeDialogueStep();
         }
-        else if (Mathf.Abs(rb.position.x - 115) < 0.05f && counter == 12)
+        else if (Mathf.Abs(rb.position.x - 73) < 0.05f && counter == 12)
         {
             TriggerSwipeDialogueStep();
         }
-        else if (Mathf.Abs(rb.position.x - 130) < 0.05f && counter == 13)
+        else if (Mathf.Abs(rb.position.x - 95) < 0.05f && counter == 13)
         {
             TriggerTapDialogueStep();
         }
@@ -388,7 +383,7 @@ public class Level6SquareControlTutorial : MonoBehaviour
     {
         if (fireballOnCooldown && firstSwipe)
         {
-            Invoke(nameof(ResetFirstFireballCooldownPt2), 1f);
+            Invoke(nameof(ResetFirstFireballCooldownPt2), 0.9f);
             firstSwipe = false;
         }
         SetBallVelocity();
@@ -463,7 +458,7 @@ public class Level6SquareControlTutorial : MonoBehaviour
         fireballOnCooldown = true;
         fireballSound.Play();
 
-        Invoke(nameof(ResetFirstFireballCooldown), 1f);
+        Invoke(nameof(ResetFirstFireballCooldown), 1.1f);
 
     }
 
@@ -504,96 +499,11 @@ public class Level6SquareControlTutorial : MonoBehaviour
 
     }
 
-    private void JumpBooster()
-    {
-        if (!isDead)
-        {
-            spriteRenderer.sprite = blockerJump;
-        }
-        dustTrail.Stop();
-        GameSessionManager.Instance.LogToFile("comecou o salto do booster");
-        rb.velocity = new Vector2(rb.velocity.x, 0); // Reseta a velocidade no eixo Y, mas mantém a velocidade no eixo X
-        canJump = false;
-
-        //GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
-        //isRotating = true; // Ativa a rotação quando salta
-        // Aplicando a rotação inicial (180 graus no eixo Z)
-        //targetRotation = transform.rotation.eulerAngles.z + 180f; // Define o ângulo de destino
-
-        boxCollider.isTrigger = true;
-        rb.AddForce(new Vector2(0, 2650));
-
-        jumpSound.Play();
-        jumpParticle.Play();
-    }
-
-
     void OnCollisionEnter2D(Collision2D col)
     {
         GameSessionManager.Instance.LogToFile($"SQUARE CONTROL colidiu com '{col.gameObject.name}");
 
-        if (col.gameObject.name == "Left Box" || col.gameObject.name == "Right Box") //REST STATION
-        {
-            foreach (ContactPoint2D contact in col.contacts)
-            {
-                // Obtém o ponto de contacto e o centro do objeto com o qual colidiste
-                float contactX = contact.point.x;
-                float boxCenterX = col.collider.bounds.center.x;
-
-                bool hitLeftSide = contactX < boxCenterX;
-                bool hitRightSide = contactX > boxCenterX;
-
-                if (Mathf.Abs(contact.normal.x) >= 0.5f && Mathf.Abs(contact.normal.y) <= 0.5f)
-                {
-                    if (col.gameObject.name == "Left Box")
-                    {
-                        if (!isDead && hitLeftSide)
-                        {
-                            isDead = true;
-                            StartCoroutine(DeathSequence());
-                            break;
-                        }
-                        else
-                        {
-                            ReverseDirection(); // lado direito → muda de direção
-                        }
-                    }
-                    else if (col.gameObject.name == "Right Box")
-                    {
-                        if (!isDead && hitRightSide)
-                        {
-                            isDead = true;
-                            StartCoroutine(DeathSequence());
-                            break;
-                        }
-                        else
-                        {
-                            ReverseDirection(); // lado esquerdo → muda de direção
-                        }
-                    }
-
-                    return;
-                }
-            }
-        }
-        else if (col.gameObject.name == "Booster")
-        {
-            // Agora verifica se o contato veio de cima ou de lado
-            foreach (ContactPoint2D contact in col.contacts)
-            {
-                if (!isDead && contact.normal.y <= 0.5f) // Se a normal não for quase vertical, é de lado
-                {
-                    isDead = true;
-                    StartCoroutine(DeathSequence());
-                    break;
-                }
-                else
-                {
-                    shouldBoost = true;
-                }
-            }
-        }
-        else if (col.gameObject.CompareTag("Ground"))
+        if (col.gameObject.CompareTag("Ground"))
         {
             // Agora verifica se o contato veio de cima ou de lado
             foreach (ContactPoint2D contact in col.contacts)
@@ -635,50 +545,6 @@ public class Level6SquareControlTutorial : MonoBehaviour
                     GameSessionManager.Instance.LogToFile("Safe landing");
                 }
             }
-        }
-        else if (col.gameObject.CompareTag("Platform"))
-        {
-            // Agora verifica se o contato veio de cima ou de lado
-            foreach (ContactPoint2D contact in col.contacts)
-            {
-                if (!isDead && contact.normal.y <= 0.5f) // Se a normal não for quase vertical, é de lado
-                {
-                    isDead = true;
-                    StartCoroutine(DeathSequence());
-                    break;
-                }
-                else
-                {
-                    if (fireballOnCooldown && !isDead)
-                    {
-                        spriteRenderer.sprite = blockerMad;
-                    }
-                    else if (!isDead)
-                    {
-                        spriteRenderer.sprite = blockerHappy;
-                    }
-
-                    dustTrail.Play();
-                    canJump = true;
-                    if (isJumping)
-                    {
-                        GameSessionManager.Instance.LogToFile("is jumping true e vai apra false");
-                        landedTime = GameSessionManager.Instance.GetElapsedTime();
-                        isJumping = false;
-                    }
-                    GameSessionManager.Instance.LogToFile("can jump a true");
-                    GetComponent<Rigidbody2D>().freezeRotation = true;
-                    //isRotating = false;
-                    //transform.rotation = Quaternion.Euler(0, 0, 0);
-                    jumpParticle.Stop();
-
-                    if (transform.position.y > Vars.cameraMaxYPos)
-                        Vars.cameraMaxYPos = transform.position.y;
-                    // Caso a colisão seja de cima, nada acontece (pousou na box)
-                    GameSessionManager.Instance.LogToFile("Safe landing");
-                }
-            }
-
         }
         else if (!isDead && col.gameObject.CompareTag("Deadly")) // Verifica se a colisão foi com spikes ou lava
         {
@@ -686,11 +552,6 @@ public class Level6SquareControlTutorial : MonoBehaviour
             StartCoroutine(DeathSequence());
         }
         else if (!isDead && col.gameObject.CompareTag("Enemy")) //  Verifica se a colisão foi com obstaculos ou inimigos
-        {
-            isDead = true;
-            StartCoroutine(DeathSequence());
-        }
-        else if (!isDead && col.gameObject.CompareTag("Lock")) //  Verifica se a colisão foi com o lock
         {
             isDead = true;
             StartCoroutine(DeathSequence());
