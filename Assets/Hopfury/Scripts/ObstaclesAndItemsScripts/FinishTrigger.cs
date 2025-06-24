@@ -2,9 +2,15 @@
 
 public class FinishTrigger : MonoBehaviour
 {
+    private bool triggered = false;  // controla se já foi acionado
+
     void OnTriggerEnter2D(Collider2D col)
     {
+        if (triggered) return;  // ignora se já foi acionado antes
+
         if (!col.CompareTag("Player")) return;
+
+        triggered = true;  // marca que já foi acionado
 
         Transform parent = transform.parent;
 
