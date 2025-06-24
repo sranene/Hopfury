@@ -26,7 +26,7 @@ public class NearColTrigger : MonoBehaviour
     void Start()
     {
         // Se tiver pai, é filho de um obstáculo
-        if (transform.parent != null)
+        if (transform.parent != null && transform.parent.name != "LevelObjects")
         {
             obstacleName = transform.parent.name;
             GameSessionManager.Instance.LogToFile($"TEM PAI {obstacleName}");
