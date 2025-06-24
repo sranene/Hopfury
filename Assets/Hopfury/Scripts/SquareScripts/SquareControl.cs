@@ -118,6 +118,11 @@ public class SquareControl : MonoBehaviour {
     {
         moveRight = !moveRight; // Inverte a direção
         SetBallVelocity();      // Atualiza a velocidade com a nova direção
+
+        if (moveRight)
+            canJump = true;
+        else
+            canJump = false;
     }
 
     void FixedUpdate()
@@ -127,6 +132,8 @@ public class SquareControl : MonoBehaviour {
             JumpBooster();
             shouldBoost = false;
         }
+
+
 
         /*if (Mathf.Abs(rb.position.x - jumpXPosition) < 0.05f)
         {
