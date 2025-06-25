@@ -72,7 +72,8 @@ public class Level0SquareControlTutorial : MonoBehaviour
     private float landedTime;
     private bool isTap = true;
 
-    private bool waitingForTap = false;
+    private bool waitingForJump = false;
+    private bool waitingForTapToSkip = false;
     private bool waitingForSwipe = false;
     private bool waitingtest = false;
     private bool coroutineStarted = false;
@@ -128,84 +129,75 @@ public class Level0SquareControlTutorial : MonoBehaviour
     {
         moveRight = !moveRight; // Inverte a direção
         SetBallVelocity();      // Atualiza a velocidade com a nova direção
+
+        if (moveRight)
+            canJump = true;
+        else
+            canJump = false;
     }
 
     IEnumerator WaitASecondAndStop(float second)
     {
         yield return new WaitForSeconds(second);
+        coroutineStarted = false;
         StopSquareVelocity();
-        TriggerTapDialogueStep();
+        TriggerTapDialogueStep(true);
     }
 
     IEnumerator WaitASecond(float second)
     {
         GameObject.Find("GameManager").GetComponent<Menus>().ShowDialogue(counter);
 
-        yield return new WaitForSeconds(0.08f);
-
-        // Guarda a velocidade atual
-        Vector2 originalVelocity = rb.velocity;
-
-        // Para completamente: zero velocidade e congela física
-        rb.velocity = Vector2.zero;
-        rb.bodyType = RigidbodyType2D.Static;
-
         yield return new WaitForSeconds(second);
 
         HideTutorialUI();
         counter++;
-
-        // Volta à física normal e restaura velocidade anterior
-        rb.bodyType = RigidbodyType2D.Dynamic;
-        rb.velocity = originalVelocity;
     }
 
     IEnumerator StartTutorial()
     {
         yield return new WaitForSeconds(1f);
-        StopSquareVelocity();
-        Menus menus = GameObject.Find("GameManager").GetComponent<Menus>();
-        if (menus != null)
-        {
-            menus.ShowDialogue(counter);
-        }
-        yield return new WaitForSeconds(5f);
-        menus.HideDialogue();
-        counter++;
-        SetBallVelocity();
+        TriggerTapDialogueStep(false);
     }
 
     IEnumerator EndTutorial()
     {
-        Menus menus = GameObject.Find("GameManager").GetComponent<Menus>();
-        if (menus != null)
-        {
-            menus.ShowDialogue(counter);
-        }
-        yield return new WaitForSeconds(5f);
-        menus.HideDialogue();
+        TriggerTapDialogueStep(false);
+        yield return new WaitForSeconds(1f);
 
         GameObject.Find("GameManager").GetComponent<Menus>().LevelComplete();
         GetComponent<Level0SquareControlTutorial>().enabled = false;
         GameObject.Find("LevelCompleteSound").GetComponent<AudioSource>().Play();
     }
 
-    private void TriggerTapDialogueStep()
+    private void TriggerTapDialogueStep(bool withJump)
     {
-        waitingForTap = true;
         StopSquareVelocity();
         Menus menus = GameObject.Find("GameManager").GetComponent<Menus>();
-        if (menus != null)
+        if (withJump)
         {
-            menus.ShowDialogue(counter);
-            menus.ShowTapHint();
+            waitingForJump = true;
+            if (menus != null)
+            {
+                menus.ShowDialogue(counter);
+                menus.ShowTapHint();
+            }
+        } else
+        {
+            waitingForTapToSkip = true;
+            if (menus != null)
+            {
+                menus.ShowDialogue(counter);
+            }
         }
         counter++;
     }
 
     private void HideTutorialUI()
     {
-        waitingForTap = false;
+        SetBallVelocity();
+        waitingForJump = false;
+        waitingForTapToSkip = false;
         waitingForSwipe = false;
 
         Menus menus = GameObject.Find("GameManager").GetComponent<Menus>();
@@ -219,6 +211,11 @@ public class Level0SquareControlTutorial : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (coroutineStarted)
+        {
+            canJump = false;
+        }
+
         if (shouldBoost)
         {
             JumpBooster();
@@ -227,24 +224,24 @@ public class Level0SquareControlTutorial : MonoBehaviour
 
         if (Mathf.Abs(rb.position.x - 27) < 0.05f && counter == 1)
         {
-            TriggerTapDialogueStep();
+            TriggerTapDialogueStep(true);
         }
         else if (Mathf.Abs(rb.position.x - 55.3f) < 0.05f && counter == 2)
         {
-            TriggerTapDialogueStep();
+            TriggerTapDialogueStep(true);
         }
-        else if (Mathf.Abs(rb.position.x - 84) < 0.05f && counter == 3 && !coroutineStarted)
+        else if (Mathf.Abs(rb.position.x - 80) < 0.05f && counter == 3 && !coroutineStarted)
         {
             coroutineStarted = true;
-            StartCoroutine(WaitASecondAndStop(2.6f));
+            StartCoroutine(WaitASecondAndStop(2.05f));
         }
         else if (Mathf.Abs(rb.position.x - 104) < 0.05f && counter == 4)
         {
-            TriggerTapDialogueStep();
+            TriggerTapDialogueStep(true);
         }
         else if (Mathf.Abs(rb.position.x - 136) < 0.05f && counter == 5)
         {
-            TriggerTapDialogueStep();
+            TriggerTapDialogueStep(true);
         }
 
 
@@ -252,10 +249,7 @@ public class Level0SquareControlTutorial : MonoBehaviour
 
     void Update()
     {
-        if (waitingForTap || waitingForSwipe)
-        {
-            HandleTouchInput();
-        }
+        HandleTouchInput();
 
         if (rb.velocity.y < 0 && canCollide)
         {
@@ -267,7 +261,7 @@ public class Level0SquareControlTutorial : MonoBehaviour
     {
         yield return new WaitForSeconds(0.3f);
 
-        if (!gestureIsSwipeCandidate && !alreadyJumpedThisTouch && waitingForTap)
+        if (!gestureIsSwipeCandidate && !alreadyJumpedThisTouch)
         {
             GameSessionManager.Instance.LogToFile("TAP ESTÁTICO DETETADO APÓS 0.3s → SALTAR");
             OnTapGesture();
@@ -318,7 +312,7 @@ public class Level0SquareControlTutorial : MonoBehaviour
                             gestureIsSwipeCandidate = true;
                             GameSessionManager.Instance.LogToFile($"POTENCIAL SWIPE DETETADO (speed={speed:F1}) → AGUARDAR FIM");
                         }
-                        else if (duration < 0.5f && speed < 200f && !alreadyJumpedThisTouch && waitingForTap)
+                        else if (duration < 0.5f && speed < 200f && !alreadyJumpedThisTouch)
                         {
                             // TAP identificado com pouco movimento
                             GameSessionManager.Instance.LogToFile($"TAP DETETADO COM POUCA VELOCIDADE (speed={speed:F1}) → SALTAR JÁ");
@@ -343,7 +337,7 @@ public class Level0SquareControlTutorial : MonoBehaviour
                 {
                     Vector2 swipeVector = endPos - earlyTouchPositions[0];
 
-                    if (swipeVector.y > Mathf.Abs(swipeVector.x) && swipeVector.y > 50f && waitingForSwipe)
+                    if (swipeVector.y > Mathf.Abs(swipeVector.x) && swipeVector.y > 50f)
                     {
                         GameSessionManager.Instance.LogToFile("SWIPE PARA CIMA CONFIRMADO → LANÇAR FIREBALL");
                         OnSwipeUpGesture();
@@ -361,7 +355,7 @@ public class Level0SquareControlTutorial : MonoBehaviour
                     float duration = Time.time - startTouchTime;
                     float speed = distance / duration;
 
-                    if (duration < 0.5f && speed < 200f && waitingForTap)
+                    if (duration < 0.5f && speed < 200f)
                     {
                         GameSessionManager.Instance.LogToFile($"TAP CURTO NO ENDED (speed={speed:F1}) → SALTAR");
                         OnTapGesture();
@@ -378,10 +372,14 @@ public class Level0SquareControlTutorial : MonoBehaviour
     public void OnTapGesture()
     {
         SetBallVelocity();
+        if (waitingForTapToSkip)
+        {
+            HideTutorialUI();
+            return;
+        }
         isJumping = true;
         if (canJump)
             Jump();
-
         HideTutorialUI();
 
     }
@@ -432,6 +430,7 @@ public class Level0SquareControlTutorial : MonoBehaviour
             spriteRenderer.sprite = blockerJump;
         }
         dustTrail.Stop();
+        Debug.Log("comecou o salto");
         GameSessionManager.Instance.LogToFile("comecou o salto");
         rb.velocity = new Vector2(rb.velocity.x, 0); // Reseta a velocidade no eixo Y, mas mantém a velocidade no eixo X
         canJump = false;
