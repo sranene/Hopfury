@@ -512,12 +512,16 @@ public class SquareControl : MonoBehaviour {
                 }
             }
         }
-        else if(col.gameObject.CompareTag("Ground"))
+       else if (col.gameObject.CompareTag("Ground"))
         {
-            // Agora verifica se o contato veio de cima ou de lado
             foreach (ContactPoint2D contact in col.contacts)
             {
-                if (!isDead && contact.normal.y <= 0.5f) // Se a normal não for quase vertical, é de lado
+                float angle = Vector2.Angle(contact.normal, Vector2.up);
+
+                // Considera seguro se o ângulo entre a normal e 'cima' for inferior a 60º
+                bool landedFromTop = angle < 60f;
+
+                if (!isDead && !landedFromTop)
                 {
                     isDead = true;
                     StartCoroutine(DeathSequence());
@@ -528,28 +532,30 @@ public class SquareControl : MonoBehaviour {
                     if (fireballOnCooldown && !isDead)
                     {
                         spriteRenderer.sprite = blockerMad;
-                    } else if (!isDead)
+                    }
+                    else if (!isDead)
                     {
                         spriteRenderer.sprite = blockerHappy;
                     }
-                    
+
                     dustTrail.Play();
                     canJump = true;
+
                     if (isJumping)
                     {
-                        GameSessionManager.Instance.LogToFile("is jumping true e vai apra false");
+                        GameSessionManager.Instance.LogToFile("is jumping true e vai para false");
                         landedTime = GameSessionManager.Instance.GetElapsedTime();
                         isJumping = false;
                     }
+
                     GameSessionManager.Instance.LogToFile("can jump a true");
+
                     GetComponent<Rigidbody2D>().freezeRotation = true;
-                    //isRotating = false;
-                    //transform.rotation = Quaternion.Euler(0, 0, 0);
                     jumpParticle.Stop();
 
-                    if(transform.position.y > Vars.cameraMaxYPos)
+                    if (transform.position.y > Vars.cameraMaxYPos)
                         Vars.cameraMaxYPos = transform.position.y;
-                    // Caso a colisão seja de cima, nada acontece (pousou na box)
+
                     GameSessionManager.Instance.LogToFile("Safe landing");
                 }
             }

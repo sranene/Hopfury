@@ -78,6 +78,7 @@ public class Level6SquareControlTutorial : MonoBehaviour
     private bool waitingtest = false;
 
     private bool firstSwipe = false;
+    private bool waitingForFirstReset = false;
 
     bool isDead = false;
 
@@ -161,9 +162,9 @@ public class Level6SquareControlTutorial : MonoBehaviour
     IEnumerator EndTutorial()
     {
         TriggerTapDialogueStep(false);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         firstSwipe = false;
-
+        HideTutorialUI();
         GameObject.Find("GameManager").GetComponent<Menus>().LevelComplete();
         GetComponent<Level0SquareControlTutorial>().enabled = false;
         GameObject.Find("LevelCompleteSound").GetComponent<AudioSource>().Play();
@@ -368,16 +369,20 @@ public class Level6SquareControlTutorial : MonoBehaviour
 
     public void OnTapGesture()
     {
-        if (waitingForTapToSkip)
+        if (waitingForFirstReset)
         {
-            HideTutorialUI();
             return;
         }
 
-        if (fireballOnCooldown && firstSwipe)
+        if (waitingForTapToSkip)
         {
-            Invoke(nameof(ResetFirstFireballCooldownPt2), 0.9f);
-            firstSwipe = false;
+            if (fireballOnCooldown && firstSwipe)
+            {
+                Invoke(nameof(ResetFirstFireballCooldownPt2), 0.9f);
+                firstSwipe = false;
+            }
+            HideTutorialUI();
+            return;
         }
 
         if (waitingForSwipe)
@@ -401,6 +406,7 @@ public class Level6SquareControlTutorial : MonoBehaviour
         SetBallVelocity();
         if (firstSwipe)
         {
+            waitingForFirstReset = true;
             TryFirstLaunchFireball();
         } else
         {
@@ -460,15 +466,16 @@ public class Level6SquareControlTutorial : MonoBehaviour
 
         canJump = false;
         Invoke(nameof(ResetFirstFireballCooldown), 1.1f);
-
     }
 
     private void ResetFirstFireballCooldown()
     {
+        waitingForFirstReset = false;
         canJump = true;
         if (counter == 10)
         {
             TriggerTapDialogueStep(false);
+
         }
     }
 
@@ -637,7 +644,7 @@ public class Level6SquareControlTutorial : MonoBehaviour
 
         // Espera mais 0.2 segundos para as partículas continuarem visíveis
         yield return new WaitForSeconds(0.3f);
-
+        HideTutorialUI();
         // Chama o Game Over depois da espera
         GameObject.Find("GameManager").GetComponent<Menus>().GameOver();
 

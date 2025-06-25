@@ -20,17 +20,39 @@ public class SlimeBehaviour : MonoBehaviour
     private bool isDead = false;
     private bool isVisible = false; // <- Visibilidade controlada
 
+    private bool coroutineStarted = false;
+    private bool isTutorialSlime = false; // Indica se este é o slime do tutorial
+    private bool tutorialTimeEnded = false;
+
     private AudioSource deathEnemySound;
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         deathEnemySound = GameObject.Find("DeathEnemySound").GetComponent<AudioSource>();
+
+        // Se a moveSpeed for exatamente 0.9f, é o slime do tutorial
+        if (Mathf.Approximately(moveSpeed, 0.9f))
+        {
+            isTutorialSlime = true;
+        }
     }
+
+
+    IEnumerator StopAfterSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        tutorialTimeEnded = true; // Agora sim ele deve parar
+    }
+
 
     void Update()
     {
-        if (!isVisible || isDead) return;
+        if (!isVisible || isDead) return; // <- Bloqueia tudo após 6s
+
+        // Se for slime do tutorial e o tempo já acabou, então para completamente
+        if (isTutorialSlime && tutorialTimeEnded)
+            return;
 
         if (isMoving)
         {
@@ -66,6 +88,13 @@ public class SlimeBehaviour : MonoBehaviour
     void OnBecameVisible()
     {
         isVisible = true;
+
+        // Só inicia a contagem de 6s se for o slime do tutorial
+        if (!coroutineStarted && isTutorialSlime)
+        {
+            coroutineStarted = true;
+            StartCoroutine(StopAfterSeconds(6f));
+        }
     }
 
     void OnBecameInvisible()

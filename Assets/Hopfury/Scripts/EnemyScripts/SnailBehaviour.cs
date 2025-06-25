@@ -15,7 +15,7 @@ public class SnailBehaviour : MonoBehaviour
     private bool isDead = false;
     private bool isVisible = false; // <- visibilidade controlada aqui
     private bool coroutineStarted = false;
-    private bool isMoving = true;
+    private bool isMovingTutorial = true;
 
     private AudioSource deathEnemySound;
 
@@ -29,7 +29,7 @@ public class SnailBehaviour : MonoBehaviour
     IEnumerator StopAfterSeconds(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        isMoving = false; // <- Aqui é onde o caracol realmente para
+        isMovingTutorial = false; // <- Aqui é onde o caracol realmente para
     }
 
 
@@ -37,7 +37,7 @@ public class SnailBehaviour : MonoBehaviour
     {
         if (!isVisible || isDead) return;
 
-        if (isMoving)
+        if (isMovingTutorial)
         {
             transform.Translate(Vector2.left * moveSpeed * Time.deltaTime);
         }
@@ -58,7 +58,7 @@ public class SnailBehaviour : MonoBehaviour
         if (!coroutineStarted && Mathf.Approximately(moveSpeed, 0.9f))
         {
             coroutineStarted = true;
-            StartCoroutine(StopAfterSeconds(6f)); // só começa após estar visível
+            StartCoroutine(StopAfterSeconds(5f)); // só começa após estar visível
         }
     }
 

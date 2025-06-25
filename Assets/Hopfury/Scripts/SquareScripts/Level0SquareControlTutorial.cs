@@ -163,8 +163,8 @@ public class Level0SquareControlTutorial : MonoBehaviour
     IEnumerator EndTutorial()
     {
         TriggerTapDialogueStep(false);
-        yield return new WaitForSeconds(1f);
-
+        yield return new WaitForSeconds(2f);
+        HideTutorialUI();
         GameObject.Find("GameManager").GetComponent<Menus>().LevelComplete();
         GetComponent<Level0SquareControlTutorial>().enabled = false;
         GameObject.Find("LevelCompleteSound").GetComponent<AudioSource>().Play();
@@ -708,7 +708,7 @@ public class Level0SquareControlTutorial : MonoBehaviour
 
         // Espera mais 0.2 segundos para as partículas continuarem visíveis
         yield return new WaitForSeconds(0.3f);
-
+        HideTutorialUI();
         // Chama o Game Over depois da espera
         GameObject.Find("GameManager").GetComponent<Menus>().GameOver();
 
