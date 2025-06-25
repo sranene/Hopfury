@@ -20,6 +20,7 @@ public class PlayerData
 public class SessionData
 {
     public string level;
+    public bool gotDiamond = false;
     public string startTime;
     public string endTime;
     public float timeOfDeath;
@@ -172,6 +173,11 @@ public class GameSessionManager : MonoBehaviour
     public void RegisterPendingTap(Tap tap)
     {
         pendingTaps.Add(tap);
+    }
+
+    public void GotDiamond()
+    {
+        currentSession.gotDiamond = true;
     }
 
     public void IncrementLevelUnlock()

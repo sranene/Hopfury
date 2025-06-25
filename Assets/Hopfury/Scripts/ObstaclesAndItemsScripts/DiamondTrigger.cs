@@ -23,7 +23,7 @@ public class DiamondTrigger : MonoBehaviour
             {
                 diamondUI.AddDiamond();
             }
-
+            GameSessionManager.Instance.GotDiamond();
             GameSessionManager.Instance.LogToFile("Player apanhou diamante enquanto isTrigger: " + other.isTrigger);
         }
     }
