@@ -294,13 +294,21 @@ public class SquareControl : MonoBehaviour {
 
     public void OnTapGesture()
     {
-        isJumping = true;
+        if (GameManager.Instance.IsInChallengeMode())
+        {
+            return;
+        }
         if (canJump)
+            isJumping = true;
             Jump();
     }
 
     public void OnSwipeUpGesture()
     {
+        if (GameManager.Instance.IsInChallengeMode())
+        {
+            return;
+        }
         TryLaunchFireball();
     }
 

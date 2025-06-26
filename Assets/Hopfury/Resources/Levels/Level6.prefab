@@ -363,7 +363,7 @@ PrefabInstance:
     - target: {fileID: 1568879980513812174, guid: 1c3b134e70cf0a242882ef1e331f406b,
         type: 3}
       propertyPath: m_Name
-      value: Snail 2
+      value: Snail (2)
       objectReference: {fileID: 0}
     - target: {fileID: 2454759697355803118, guid: 1c3b134e70cf0a242882ef1e331f406b,
         type: 3}

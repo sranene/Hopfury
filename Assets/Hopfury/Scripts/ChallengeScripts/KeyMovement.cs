@@ -25,8 +25,7 @@ public class KeyMovement : MonoBehaviour
         {
             return;
         }
-        // Se o toque é detectado em dispositivos móveis
-        /*if (Input.touchCount > 0)
+        if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0); // Obtém o primeiro toque (pode adicionar lógica para múltiplos toques)
 
@@ -51,7 +50,7 @@ public class KeyMovement : MonoBehaviour
         }
         else // Para o caso de não estar em dispositivos móveis (ou seja, no PC)
         {
-            */
+            
             // Detecção de clique do mouse
             if (Input.GetMouseButtonDown(0) && IsMouseOnKey())
             {
@@ -66,7 +65,7 @@ public class KeyMovement : MonoBehaviour
             {
                 isDragging = false; // Para de arrastar
             }
-        //}
+        }
     }
 
     // Verifica se o toque foi feito em cima da chave
