@@ -299,8 +299,11 @@ public class SquareControl : MonoBehaviour {
             return;
         }
         if (canJump)
+        {
+            canJump = false;
             isJumping = true;
             Jump();
+        }
     }
 
     public void OnSwipeUpGesture()
@@ -408,6 +411,7 @@ public class SquareControl : MonoBehaviour {
 
     private void Jump()
     {
+        Debug.Log("salto");
         if (!isDead)
         {
             spriteRenderer.sprite = blockerJump;
@@ -417,7 +421,6 @@ public class SquareControl : MonoBehaviour {
         GameSessionManager.Instance.LogToFile($"Jump triggered at X: {transform.position.x}");
         GameSessionManager.Instance.LogToFile("comecou o salto");
         rb.velocity = new Vector2(rb.velocity.x, 0); // Reseta a velocidade no eixo Y, mas mantém a velocidade no eixo X
-        canJump = false;
 
         //GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
         //isRotating = true; // Ativa a rotação quando salta
@@ -547,6 +550,7 @@ public class SquareControl : MonoBehaviour {
                     }
 
                     dustTrail.Play();
+                    Debug.Log("tocou no ground e ja pode saltar");
                     canJump = true;
 
                     if (isJumping)
