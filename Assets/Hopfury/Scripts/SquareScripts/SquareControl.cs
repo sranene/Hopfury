@@ -527,24 +527,24 @@ public class SquareControl : MonoBehaviour {
         {
             foreach (ContactPoint2D contact in col.contacts)
             {
-                float angle = Vector2.Angle(contact.normal, Vector2.up);
+                Vector2 normal = contact.normal;
 
-                // Considera seguro se o ângulo entre a normal e 'cima' for inferior a 60º
-                bool landedFromTop = angle < 60f;
+                // Considera letal se a colisão for praticamente horizontal (vindo de lado)
+                bool isSideHit = Mathf.Abs(normal.y) < 0.5f;
 
-                if (!isDead && !landedFromTop)
+                if (!isDead && isSideHit)
                 {
                     isDead = true;
                     StartCoroutine(DeathSequence());
                     break;
                 }
-                else
+                else if (!isDead)
                 {
-                    if (fireballOnCooldown && !isDead)
+                    if (fireballOnCooldown)
                     {
                         spriteRenderer.sprite = blockerMad;
                     }
-                    else if (!isDead)
+                    else
                     {
                         spriteRenderer.sprite = blockerHappy;
                     }
