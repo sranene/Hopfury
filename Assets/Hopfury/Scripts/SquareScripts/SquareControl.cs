@@ -182,7 +182,7 @@ public class SquareControl : MonoBehaviour {
 
     private IEnumerator StaticTapTimeout()
     {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.2f);
 
         if (!gestureIsSwipeCandidate && !alreadyJumpedThisTouch)
         {
@@ -473,7 +473,7 @@ public class SquareControl : MonoBehaviour {
                 bool hitLeftSide = contactX < boxCenterX;
                 bool hitRightSide = contactX > boxCenterX;
 
-                if (Mathf.Abs(contact.normal.x) >= 0.5f && Mathf.Abs(contact.normal.y) <= 0.5f)
+                if (Mathf.Abs(contact.normal.x) >= 0.3f && Mathf.Abs(contact.normal.y) <= 0.3f)
                 {
                     if (col.gameObject.name == "Left Box")
                     {
@@ -530,7 +530,7 @@ public class SquareControl : MonoBehaviour {
                 Vector2 normal = contact.normal;
 
                 // Considera letal se a colisão for praticamente horizontal (vindo de lado)
-                bool isSideHit = Mathf.Abs(normal.y) < 0.5f;
+                bool isSideHit = Mathf.Abs(normal.y) < 0.3f;
 
                 if (!isDead && isSideHit)
                 {

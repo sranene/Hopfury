@@ -40,6 +40,7 @@ public class Menus : MonoBehaviour {
     private Button saveButton = null;
 
     private const string PlayerNameKey = "PlayerName";
+    private bool reachedMaxTries = false;
 
     void Start() 
     {
@@ -299,12 +300,19 @@ public class Menus : MonoBehaviour {
 
     public void LoadLevel() 
     {
+        // Evita que o UI fique preso na nova cena
+        if (gameOverMenuUI != null)
+        {
+            gameOverMenuUI.SetActive(false);
+        }
+
         // Se for nível 0 ou 6, carregar o tutorial correspondente
         if (Vars.currentLevel == "0" || Vars.currentLevel == "6")
         {
             LoadTutorial();
             return;
         }
+
 
         GameObject level = Instantiate(Resources.Load("Levels/Level" + Vars.currentLevel, typeof(GameObject))) as GameObject;
         level.name = "Level" + Vars.currentLevel.ToString();
@@ -501,21 +509,121 @@ public class Menus : MonoBehaviour {
 
     public void GameOver() 
     {
+        int trynumber = 1;
         //ALTERAÇÃO
         if (GameSessionManager.Instance != null)
         {
+            trynumber = CheckTryNumberAndUnlockNextLevel();
             GameSessionManager.Instance.EndCurrentSession();
         }
         //ALTERAÇÃO
-        Invoke("ShowGameOverMenu", 2f);
+        StartCoroutine(ShowGameOverMenuDelayed(trynumber));
     }
 
-    private void ShowGameOverMenu() 
+    private IEnumerator ShowGameOverMenuDelayed(int trynumber)
     {
+        yield return new WaitForSeconds(2f);
+        ShowGameOverMenu(trynumber);
+    }
+
+
+    private void ShowGameOverMenu(int trynumber) 
+    {
+        // Procurar o texto dentro do GameOverMenu
+        Transform numberTextTransform = gameOverMenuUI.transform.Find("Subtitle/Number");
+        if (numberTextTransform != null)
+        {
+            Text numberText = numberTextTransform.GetComponent<Text>();
+            if (numberText != null)
+            {
+                numberText.text = trynumber.ToString();
+            }
+            else
+            {
+                Debug.LogWarning("Text não encontrado no Number");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Transform Subtitle/Number não encontrado!");
+        }
+
         AudioManager.Instance.StopBackgroundMusic();
         diamondUI.SetActive(false);
         gameOverMenuUI.SetActive(true);
     }
+
+    private int CheckTryNumberAndUnlockNextLevel()
+    {
+        Debug.Log($"entrei");
+        if (GameSessionManager.Instance == null) return -1;
+
+
+        int currentTryNumber = GameSessionManager.Instance.GetCurrentTryNumber();
+        Debug.Log($"o current é {currentTryNumber}");
+        if (currentTryNumber >= 3)
+        {
+            Debug.Log($"era igual o umaior q 3");
+            int currentLevelNumber = GameSessionManager.Instance.GetCurrentLevel();
+            int nextLevel = currentLevelNumber + 1;
+            Debug.Log($"o next level seria {nextLevel}");
+            // Atualiza o unlock apenas se necessário
+            if (PlayerPrefs.GetInt("LevelUnlock", 0) < nextLevel)
+            {
+                Debug.Log($"atalizano o unblock");
+                PlayerPrefs.SetInt("LevelUnlock", nextLevel);
+                PlayerPrefs.Save();
+                Debug.Log("Novo nível desbloqueado automaticamente: Level " + nextLevel);
+            }
+
+            GameSessionManager.Instance.SetCurrentTryNumber();
+            Debug.Log($"ta alterado o trycurrentnnumber a 1");
+
+            // Oculta o botão de restart
+            GameObject restartButton = gameOverMenuUI.transform.Find("RestartButton")?.gameObject;
+            Debug.Log($"procurando restart button");
+            if (restartButton != null)
+            {
+                Debug.Log($"encontrou restart button e false");
+                restartButton.SetActive(false);
+            }
+
+            // Mostra botão de "Next" se existir (vais ter de criar este botão no GameOver UI)
+            GameObject nextButton = gameOverMenuUI.transform.Find("NextLevelButton (1)")?.gameObject;
+            Debug.Log($"procurando next button");
+            if (nextButton != null)
+            {
+                Debug.Log($"encontrou next button e true");
+                nextButton.SetActive(true);
+            }
+            Debug.Log($"reachedMaxtries a true");
+            reachedMaxTries = true;
+            return currentTryNumber;
+        }
+        else
+        {
+            // Em tentativas normais, garantir que botão Restart está ativo e Next oculto
+            GameObject restartButton = gameOverMenuUI.transform.Find("RestartButton")?.gameObject;
+            Debug.Log($"procurando restart button 2");
+            if (restartButton != null)
+            {
+                Debug.Log($"encontrou restart button 2 e true");
+                restartButton.SetActive(true);
+            }
+
+            GameObject nextButton = gameOverMenuUI.transform.Find("NextLevelButton (1)")?.gameObject;
+            Debug.Log($"procurando next button 2");
+            if (nextButton != null)
+            {
+                Debug.Log($"encontrou restart button 2 e false");
+                nextButton.SetActive(false);
+            }
+            Debug.Log($"reachedMaxtries a false");
+            reachedMaxTries = false;
+            return currentTryNumber;
+        }
+    }
+
 
     public void NextLevel() 
     {

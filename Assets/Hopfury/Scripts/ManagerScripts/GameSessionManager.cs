@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 
 // Tipos de dados usados
@@ -20,10 +21,11 @@ public class PlayerData
 public class SessionData
 {
     public string level;
+    public int tryNumber = 0;
     public bool gotDiamond = false;
     public string startTime;
     public string endTime;
-    public float timeOfDeath;
+    public float timeOfDeath = -1;
     public List<ObstacleData> obstacles;
 }
 
@@ -85,6 +87,7 @@ public class GameSessionManager : MonoBehaviour
 
     private PlayerData currentPlayer;
     private SessionData currentSession;
+    private int currentLevel;
     private Dictionary<string, ObstacleData> obstacles = new Dictionary<string, ObstacleData>();
     private List<Tap> pendingTaps = new List<Tap>();
 
@@ -217,6 +220,47 @@ public class GameSessionManager : MonoBehaviour
         }
     }
 
+    public int GetCurrentTryNumber()
+    {
+        return currentSession.tryNumber;
+    }
+
+    public int SetCurrentTryNumber()
+    {
+        return currentSession.tryNumber = 1;
+    }
+
+    public int GetCurrentLevel()
+    {
+        return currentLevel;
+    }
+
+    public void UpdateTryNumber()
+    {
+        if (currentPlayer == null || currentSession == null)
+        {
+            LogToFile("Player ou currentSession é null em UpdateTryNumber!");
+            return;
+        }
+
+        int highestTryNumber = 0;
+
+        foreach (SessionData session in currentPlayer.sessions)
+        {
+            if (session.level == currentSession.level)
+            {
+                if (session.tryNumber > highestTryNumber)
+                {
+                    highestTryNumber = session.tryNumber;
+                }
+            }
+        }
+
+        int newTryNumber = highestTryNumber + 1;
+        currentSession.tryNumber = newTryNumber;
+
+        LogToFile($"[UpdateTryNumber] Level {currentSession.level} => Novo tryNumber: {newTryNumber}");
+    }
 
 
 
@@ -230,6 +274,7 @@ public class GameSessionManager : MonoBehaviour
         }
 
         LogToFile($"Setting timeOfDeath..");
+        UpdateTryNumber();
         currentSession.timeOfDeath = GetElapsedTime();
     }
 
@@ -263,6 +308,7 @@ public class GameSessionManager : MonoBehaviour
 
         string playerName = PlayerPrefs.GetString("PlayerName", "Player");
         currentPlayer = playerList.players.Find(p => p.name == playerName);
+        currentLevel = int.Parse(Regex.Match(level.name, @"\d+").Value);
 
         if (currentPlayer == null)
         {
