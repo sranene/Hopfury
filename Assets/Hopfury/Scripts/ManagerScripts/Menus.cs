@@ -555,48 +555,36 @@ public class Menus : MonoBehaviour {
 
     private int CheckTryNumberAndUnlockNextLevel()
     {
-        Debug.Log($"entrei");
         if (GameSessionManager.Instance == null) return -1;
 
 
         int currentTryNumber = GameSessionManager.Instance.GetCurrentTryNumber();
-        Debug.Log($"o current é {currentTryNumber}");
         if (currentTryNumber >= 3)
         {
-            Debug.Log($"era igual o umaior q 3");
             int currentLevelNumber = GameSessionManager.Instance.GetCurrentLevel();
             int nextLevel = currentLevelNumber + 1;
-            Debug.Log($"o next level seria {nextLevel}");
             // Atualiza o unlock apenas se necessário
             if (PlayerPrefs.GetInt("LevelUnlock", 0) < nextLevel)
             {
-                Debug.Log($"atalizano o unblock");
                 PlayerPrefs.SetInt("LevelUnlock", nextLevel);
                 PlayerPrefs.Save();
-                Debug.Log("Novo nível desbloqueado automaticamente: Level " + nextLevel);
             }
 
             GameSessionManager.Instance.SetCurrentTryNumber();
-            Debug.Log($"ta alterado o trycurrentnnumber a 1");
 
             // Oculta o botão de restart
             GameObject restartButton = gameOverMenuUI.transform.Find("RestartButton")?.gameObject;
-            Debug.Log($"procurando restart button");
             if (restartButton != null)
             {
-                Debug.Log($"encontrou restart button e false");
                 restartButton.SetActive(false);
             }
 
             // Mostra botão de "Next" se existir (vais ter de criar este botão no GameOver UI)
             GameObject nextButton = gameOverMenuUI.transform.Find("NextLevelButton (1)")?.gameObject;
-            Debug.Log($"procurando next button");
             if (nextButton != null)
             {
-                Debug.Log($"encontrou next button e true");
                 nextButton.SetActive(true);
             }
-            Debug.Log($"reachedMaxtries a true");
             reachedMaxTries = true;
             return currentTryNumber;
         }
@@ -604,21 +592,16 @@ public class Menus : MonoBehaviour {
         {
             // Em tentativas normais, garantir que botão Restart está ativo e Next oculto
             GameObject restartButton = gameOverMenuUI.transform.Find("RestartButton")?.gameObject;
-            Debug.Log($"procurando restart button 2");
             if (restartButton != null)
             {
-                Debug.Log($"encontrou restart button 2 e true");
                 restartButton.SetActive(true);
             }
 
             GameObject nextButton = gameOverMenuUI.transform.Find("NextLevelButton (1)")?.gameObject;
-            Debug.Log($"procurando next button 2");
             if (nextButton != null)
             {
-                Debug.Log($"encontrou restart button 2 e false");
                 nextButton.SetActive(false);
             }
-            Debug.Log($"reachedMaxtries a false");
             reachedMaxTries = false;
             return currentTryNumber;
         }

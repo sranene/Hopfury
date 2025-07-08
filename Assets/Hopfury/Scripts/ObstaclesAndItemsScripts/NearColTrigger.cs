@@ -107,31 +107,42 @@ public class NearColTrigger : MonoBehaviour
     {
         Renderer renderer = null;
 
-        // Tenta obter do pai
         if (transform.parent != null)
         {
-            renderer = transform.parent.GetComponent<Renderer>();
-
-            // Se o pai não tiver, tenta o filho chamado "Left"
-            if (renderer == null)
+            if (transform.parent.name.ToLower().Contains("booster"))
             {
-                Transform leftChild = transform.parent.Find("Left");
-                if (leftChild != null)
+                Transform boxChild = transform.parent.Find("Box");
+                if (boxChild != null)
                 {
-                    renderer = leftChild.GetComponent<Renderer>();
+                    renderer = boxChild.GetComponent<Renderer>();
                     if (renderer != null)
                     {
-                        GameSessionManager.Instance.LogToFile("[NearCol] Renderer encontrado no filho 'Left'.");
+                        GameSessionManager.Instance.LogToFile("[NearCol] Renderer encontrado no filho 'Box' do Booster.");
                     }
                 }
             }
             else
             {
-                GameSessionManager.Instance.LogToFile("[NearCol] Renderer encontrado no pai.");
+                renderer = transform.parent.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    GameSessionManager.Instance.LogToFile("[NearCol] Renderer encontrado no pai.");
+                }
+                else
+                {
+                    Transform leftChild = transform.parent.Find("Left");
+                    if (leftChild != null)
+                    {
+                        renderer = leftChild.GetComponent<Renderer>();
+                        if (renderer != null)
+                        {
+                            GameSessionManager.Instance.LogToFile("[NearCol] Renderer encontrado no filho 'Left'.");
+                        }
+                    }
+                }
             }
         }
 
-        // Se ainda não encontrou, tenta no próprio objeto
         if (renderer == null)
         {
             renderer = GetComponent<Renderer>();
@@ -155,5 +166,6 @@ public class NearColTrigger : MonoBehaviour
         timeStimuli = GameSessionManager.Instance.GetElapsedTime();
         GameSessionManager.Instance.LogToFile($"[NearCol] Obstáculo ficou visível no tempo: {timeStimuli}");
     }
+
 
 }
