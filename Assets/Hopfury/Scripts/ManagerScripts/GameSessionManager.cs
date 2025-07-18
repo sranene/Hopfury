@@ -96,7 +96,6 @@ public class GameSessionManager : MonoBehaviour
 
     private Stopwatch stopwatch;
 
-
     private void Awake()
     {
         logFilePath = Path.Combine(Application.persistentDataPath, "game_logs.txt");
@@ -158,7 +157,7 @@ public class GameSessionManager : MonoBehaviour
 
         // Define o intervalo de tempo do obstáculo
         float startTime = obsData.timeStimuli;
-        float endTime = obsData.finishTime;
+        float endTime = obsData.finishTime + 0.3f;
 
         // Filtra os taps que ocorreram durante o tempo do obstáculo
         List<Tap> tapsDuringObstacle = pendingTaps

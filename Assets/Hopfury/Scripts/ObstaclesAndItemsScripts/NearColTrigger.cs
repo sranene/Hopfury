@@ -25,6 +25,7 @@ public class NearColTrigger : MonoBehaviour
 
     void Start()
     {
+
         // Se tiver pai, é filho de um obstáculo
         if (transform.parent != null && transform.parent.name != "LevelObjects")
         {

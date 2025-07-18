@@ -411,6 +411,9 @@ public class SquareControl : MonoBehaviour {
         radius = legacyTouch.radius;
         radiusVar = legacyTouch.radiusVariance;
 
+        // ASSUMIR TAP POR DEFEITO
+        isTap = true;
+
         // Verificação direta de swipe com posição inicial e final
         Vector2 startPos = finger.currentTouch.startScreenPosition;
         Vector2 endPos = finger.screenPosition;
@@ -527,6 +530,16 @@ public class SquareControl : MonoBehaviour {
         jumpParticle.Play();
     }
 
+    
+    IEnumerator DelayedRegisterObstacle(string name, float start, float end, float stimuli, float finishTime, float x, float y, float width)
+    {
+        // Espera até o fim do frame ou 0.1s para garantir que o tap terminou
+        yield return new WaitForSeconds(0.2f);
+
+        GameSessionManager.Instance.SetObstacle(name, start, end, stimuli, finishTime, x, y, width);
+    }
+
+
 
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -550,6 +563,66 @@ public class SquareControl : MonoBehaviour {
                         if (!isDead && hitLeftSide)
                         {
                             isDead = true;
+
+                            Transform colTransform = col.transform;
+                            Transform nearColStartTransform = colTransform.Find("NearCol start");
+                            Transform nearColEndTransform = colTransform.Find("NearCol end");
+
+                            if (nearColStartTransform != null && nearColEndTransform != null)
+                            {
+                                NearColTrigger startTrigger = nearColStartTransform.GetComponent<NearColTrigger>();
+                                NearColTrigger endTrigger = nearColEndTransform.GetComponent<NearColTrigger>();
+
+                                if (startTrigger != null && endTrigger != null)
+                                {
+                                    float start = startTrigger.GetTimeStart();
+                                    float end = endTrigger.GetTimeEnd();
+                                    float stimuli = startTrigger.GetTimeStimuli();
+                                    string name = startTrigger.GetName();
+                                    float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                                    float x = startTrigger.GetX();
+                                    float y = startTrigger.GetY();
+                                    //float width = startTrigger.GetWidth();
+                                    float width = -1;
+
+                                    GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (filhos) com X={x}, Y={y}, Width={width}");
+                                    StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+                                }
+                                else
+                                {
+                                    GameSessionManager.Instance.LogToFile("Script NearColTrigger não encontrado nos filhos NearCol start ou NearCol end.");
+                                }
+                            }
+                            else
+                            {
+                                // Verifica se o pai tem NearColTrigger (caso seja um obstáculo "autónomo")
+                                Transform parent = colTransform.parent != null ? colTransform.parent : colTransform;
+                                NearColTrigger nearCol = parent.GetComponent<NearColTrigger>();
+
+                                if (nearCol != null)
+                                {
+                                    float start = nearCol.GetTimeStart();
+                                    float end = nearCol.GetTimeEnd();
+                                    float stimuli = nearCol.GetTimeStimuli();
+                                    string name = nearCol.GetName();
+                                    float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                                    float x = nearCol.GetX();
+                                    float y = nearCol.GetY();
+                                    //float width = nearCol.GetWidth();
+                                    float width = -1;
+
+                                    GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (pai com NearColTrigger) com X={x}, Y={y}, Width={width}");
+                                    StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                                }
+                                else
+                                {
+                                    GameSessionManager.Instance.LogToFile("Nenhum NearColTrigger encontrado nem nos filhos nem no pai.");
+                                }
+                            }
+
                             StartCoroutine(DeathSequence());
                             break;
                         }
@@ -563,6 +636,66 @@ public class SquareControl : MonoBehaviour {
                         if (!isDead && hitRightSide)
                         {
                             isDead = true;
+
+                            Transform colTransform = col.transform;
+                            Transform nearColStartTransform = colTransform.Find("NearCol start");
+                            Transform nearColEndTransform = colTransform.Find("NearCol end");
+
+                            if (nearColStartTransform != null && nearColEndTransform != null)
+                            {
+                                NearColTrigger startTrigger = nearColStartTransform.GetComponent<NearColTrigger>();
+                                NearColTrigger endTrigger = nearColEndTransform.GetComponent<NearColTrigger>();
+
+                                if (startTrigger != null && endTrigger != null)
+                                {
+                                    float start = startTrigger.GetTimeStart();
+                                    float end = endTrigger.GetTimeEnd();
+                                    float stimuli = startTrigger.GetTimeStimuli();
+                                    string name = startTrigger.GetName();
+                                    float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                                    float x = startTrigger.GetX();
+                                    float y = startTrigger.GetY();
+                                    //float width = startTrigger.GetWidth();
+                                    float width = -1;
+
+                                    GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (filhos) com X={x}, Y={y}, Width={width}");
+                                    StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                                }
+                                else
+                                {
+                                    GameSessionManager.Instance.LogToFile("Script NearColTrigger não encontrado nos filhos NearCol start ou NearCol end.");
+                                }
+                            }
+                            else
+                            {
+                                // Verifica se o pai tem NearColTrigger (caso seja um obstáculo "autónomo")
+                                Transform parent = colTransform.parent != null ? colTransform.parent : colTransform;
+                                NearColTrigger nearCol = parent.GetComponent<NearColTrigger>();
+
+                                if (nearCol != null)
+                                {
+                                    float start = nearCol.GetTimeStart();
+                                    float end = nearCol.GetTimeEnd();
+                                    float stimuli = nearCol.GetTimeStimuli();
+                                    string name = nearCol.GetName();
+                                    float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                                    float x = nearCol.GetX();
+                                    float y = nearCol.GetY();
+                                    //float width = nearCol.GetWidth();
+                                    float width = -1;
+
+                                    GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (pai com NearColTrigger) com X={x}, Y={y}, Width={width}");
+                                    StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                                }
+                                else
+                                {
+                                    GameSessionManager.Instance.LogToFile("Nenhum NearColTrigger encontrado nem nos filhos nem no pai.");
+                                }
+                            }
                             StartCoroutine(DeathSequence());
                             break;
                         }
@@ -584,6 +717,66 @@ public class SquareControl : MonoBehaviour {
                 if (!isDead && contact.normal.y <= 0.5f) // Se a normal não for quase vertical, é de lado
                 {
                     isDead = true;
+
+                    Transform colTransform = col.transform;
+                    Transform nearColStartTransform = colTransform.Find("NearCol start");
+                    Transform nearColEndTransform = colTransform.Find("NearCol end");
+
+                    if (nearColStartTransform != null && nearColEndTransform != null)
+                    {
+                        NearColTrigger startTrigger = nearColStartTransform.GetComponent<NearColTrigger>();
+                        NearColTrigger endTrigger = nearColEndTransform.GetComponent<NearColTrigger>();
+
+                        if (startTrigger != null && endTrigger != null)
+                        {
+                            float start = startTrigger.GetTimeStart();
+                            float end = endTrigger.GetTimeEnd();
+                            float stimuli = startTrigger.GetTimeStimuli();
+                            string name = startTrigger.GetName();
+                            float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                            float x = startTrigger.GetX();
+                            float y = startTrigger.GetY();
+                            //float width = startTrigger.GetWidth();
+                            float width = -1;
+
+                            GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (filhos) com X={x}, Y={y}, Width={width}");
+                            StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                        }
+                        else
+                        {
+                            GameSessionManager.Instance.LogToFile("Script NearColTrigger não encontrado nos filhos NearCol start ou NearCol end.");
+                        }
+                    }
+                    else
+                    {
+                        // Verifica se o pai tem NearColTrigger (caso seja um obstáculo "autónomo")
+                        Transform parent = colTransform.parent != null ? colTransform.parent : colTransform;
+                        NearColTrigger nearCol = parent.GetComponent<NearColTrigger>();
+
+                        if (nearCol != null)
+                        {
+                            float start = nearCol.GetTimeStart();
+                            float end = nearCol.GetTimeEnd();
+                            float stimuli = nearCol.GetTimeStimuli();
+                            string name = nearCol.GetName();
+                            float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                            float x = nearCol.GetX();
+                            float y = nearCol.GetY();
+                            //float width = nearCol.GetWidth();
+                            float width = -1;
+
+                            GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (pai com NearColTrigger) com X={x}, Y={y}, Width={width}");
+                            StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                        }
+                        else
+                        {
+                            GameSessionManager.Instance.LogToFile("Nenhum NearColTrigger encontrado nem nos filhos nem no pai.");
+                        }
+                    }
                     StartCoroutine(DeathSequence());
                     break;
                 }
@@ -605,6 +798,67 @@ public class SquareControl : MonoBehaviour {
                 if (!isDead && isSideHit)
                 {
                     isDead = true;
+
+                    Transform colTransform = col.transform;
+                    Transform nearColStartTransform = colTransform.Find("NearCol start");
+                    Transform nearColEndTransform = colTransform.Find("NearCol end");
+
+                    if (nearColStartTransform != null && nearColEndTransform != null)
+                    {
+                        NearColTrigger startTrigger = nearColStartTransform.GetComponent<NearColTrigger>();
+                        NearColTrigger endTrigger = nearColEndTransform.GetComponent<NearColTrigger>();
+
+                        if (startTrigger != null && endTrigger != null)
+                        {
+                            float start = startTrigger.GetTimeStart();
+                            float end = endTrigger.GetTimeEnd();
+                            float stimuli = startTrigger.GetTimeStimuli();
+                            string name = startTrigger.GetName();
+                            float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                            float x = startTrigger.GetX();
+                            float y = startTrigger.GetY();
+                            //float width = startTrigger.GetWidth();
+                            float width = -1;
+
+                            GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (filhos) com X={x}, Y={y}, Width={width}");
+                            StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                        }
+                        else
+                        {
+                            GameSessionManager.Instance.LogToFile("Script NearColTrigger não encontrado nos filhos NearCol start ou NearCol end.");
+                        }
+                    }
+                    else
+                    {
+                        // Verifica se o pai tem NearColTrigger (caso seja um obstáculo "autónomo")
+                        Transform parent = colTransform.parent != null ? colTransform.parent : colTransform;
+                        NearColTrigger nearCol = parent.GetComponent<NearColTrigger>();
+
+                        if (nearCol != null)
+                        {
+                            float start = nearCol.GetTimeStart();
+                            float end = nearCol.GetTimeEnd();
+                            float stimuli = nearCol.GetTimeStimuli();
+                            string name = nearCol.GetName();
+                            float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                            float x = nearCol.GetX();
+                            float y = nearCol.GetY();
+                            //float width = nearCol.GetWidth();
+                            float width = -1;
+
+                            GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (pai com NearColTrigger) com X={x}, Y={y}, Width={width}");
+                            StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                        }
+                        else
+                        {
+                            GameSessionManager.Instance.LogToFile("Nenhum NearColTrigger encontrado nem nos filhos nem no pai.");
+                        }
+                    }
+
                     StartCoroutine(DeathSequence());
                     break;
                 }
@@ -650,6 +904,67 @@ public class SquareControl : MonoBehaviour {
                 if (!isDead && contact.normal.y <= 0.5f) // Se a normal não for quase vertical, é de lado
                 {
                     isDead = true;
+
+                    Transform colTransform = col.transform;
+                    Transform nearColStartTransform = colTransform.Find("NearCol start");
+                    Transform nearColEndTransform = colTransform.Find("NearCol end");
+
+                    if (nearColStartTransform != null && nearColEndTransform != null)
+                    {
+                        NearColTrigger startTrigger = nearColStartTransform.GetComponent<NearColTrigger>();
+                        NearColTrigger endTrigger = nearColEndTransform.GetComponent<NearColTrigger>();
+
+                        if (startTrigger != null && endTrigger != null)
+                        {
+                            float start = startTrigger.GetTimeStart();
+                            float end = endTrigger.GetTimeEnd();
+                            float stimuli = startTrigger.GetTimeStimuli();
+                            string name = startTrigger.GetName();
+                            float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                            float x = startTrigger.GetX();
+                            float y = startTrigger.GetY();
+                            //float width = startTrigger.GetWidth();
+                            float width = -1;
+
+                            GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (filhos) com X={x}, Y={y}, Width={width}");
+                            StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                        }
+                        else
+                        {
+                            GameSessionManager.Instance.LogToFile("Script NearColTrigger não encontrado nos filhos NearCol start ou NearCol end.");
+                        }
+                    }
+                    else
+                    {
+                        // Verifica se o pai tem NearColTrigger (caso seja um obstáculo "autónomo")
+                        Transform parent = colTransform.parent != null ? colTransform.parent : colTransform;
+                        NearColTrigger nearCol = parent.GetComponent<NearColTrigger>();
+
+                        if (nearCol != null)
+                        {
+                            float start = nearCol.GetTimeStart();
+                            float end = nearCol.GetTimeEnd();
+                            float stimuli = nearCol.GetTimeStimuli();
+                            string name = nearCol.GetName();
+                            float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                            float x = nearCol.GetX();
+                            float y = nearCol.GetY();
+                            //float width = nearCol.GetWidth();
+                            float width = -1;
+
+                            GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (pai com NearColTrigger) com X={x}, Y={y}, Width={width}");
+                            StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                        }
+                        else
+                        {
+                            GameSessionManager.Instance.LogToFile("Nenhum NearColTrigger encontrado nem nos filhos nem no pai.");
+                        }
+                    }
+
                     StartCoroutine(DeathSequence());
                     break;
                 }
@@ -712,7 +1027,8 @@ public class SquareControl : MonoBehaviour {
                     float width = -1;
 
                     GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (filhos) com X={x}, Y={y}, Width={width}");
-                    GameSessionManager.Instance.SetObstacle(name, start, end, stimuli, finishTime, x, y, width);
+                    StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
                 }
                 else
                 {
@@ -739,7 +1055,8 @@ public class SquareControl : MonoBehaviour {
                     float width = -1;
 
                     GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (pai com NearColTrigger) com X={x}, Y={y}, Width={width}");
-                    GameSessionManager.Instance.SetObstacle(name, start, end, stimuli, finishTime, x, y, width);
+                    StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
                 }
                 else
                 {
@@ -752,6 +1069,67 @@ public class SquareControl : MonoBehaviour {
         else if(!isDead && col.gameObject.CompareTag("Enemy")) //  Verifica se a colisão foi com obstaculos ou inimigos
         {
             isDead = true;
+
+            Transform colTransform = col.transform;
+            Transform nearColStartTransform = colTransform.Find("NearCol start");
+            Transform nearColEndTransform = colTransform.Find("NearCol end");
+
+            if (nearColStartTransform != null && nearColEndTransform != null)
+            {
+                NearColTrigger startTrigger = nearColStartTransform.GetComponent<NearColTrigger>();
+                NearColTrigger endTrigger = nearColEndTransform.GetComponent<NearColTrigger>();
+
+                if (startTrigger != null && endTrigger != null)
+                {
+                    float start = startTrigger.GetTimeStart();
+                    float end = endTrigger.GetTimeEnd();
+                    float stimuli = startTrigger.GetTimeStimuli();
+                    string name = startTrigger.GetName();
+                    float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                    float x = startTrigger.GetX();
+                    float y = startTrigger.GetY();
+                    //float width = startTrigger.GetWidth();
+                    float width = -1;
+
+                    GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (filhos) com X={x}, Y={y}, Width={width}");
+                    StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                }
+                else
+                {
+                    GameSessionManager.Instance.LogToFile("Script NearColTrigger não encontrado nos filhos NearCol start ou NearCol end.");
+                }
+            }
+            else
+            {
+                // Verifica se o pai tem NearColTrigger (caso seja um obstáculo "autónomo")
+                Transform parent = colTransform.parent != null ? colTransform.parent : colTransform;
+                NearColTrigger nearCol = parent.GetComponent<NearColTrigger>();
+
+                if (nearCol != null)
+                {
+                    float start = nearCol.GetTimeStart();
+                    float end = nearCol.GetTimeEnd();
+                    float stimuli = nearCol.GetTimeStimuli();
+                    string name = nearCol.GetName();
+                    float finishTime = GameSessionManager.Instance.GetElapsedTime();
+
+                    float x = nearCol.GetX();
+                    float y = nearCol.GetY();
+                    //float width = nearCol.GetWidth();
+                    float width = -1;
+
+                    GameSessionManager.Instance.LogToFile($"[Finish] Saving obstacle (pai com NearColTrigger) com X={x}, Y={y}, Width={width}");
+                    StartCoroutine(DelayedRegisterObstacle(name, start, end, stimuli, finishTime, x, y, width));
+
+                }
+                else
+                {
+                    GameSessionManager.Instance.LogToFile("Nenhum NearColTrigger encontrado nem nos filhos nem no pai.");
+                }
+            }
+
             StartCoroutine(DeathSequence());
         }
         else if(!isDead && col.gameObject.CompareTag("Lock")) //  Verifica se a colisão foi com o lock
