@@ -70,6 +70,14 @@ public class SquareControl : MonoBehaviour {
     private float landedTime;
     private bool isTap = true;
 
+    private int stationaryTouchCount = 0;
+    private const int stationaryTouchThreshold = 1; // nº de frames stationary antes de considerar tap
+    private Dictionary<int, bool> alreadyJumpedForTouch = new Dictionary<int, bool>();
+    private int? activeTouchId = null; // dedo ativo que estamos a processar
+
+    private float touchStartTime;
+
+
     bool isDead = false;
 
     private float jumpXPosition = 14.15f; //test
@@ -180,15 +188,15 @@ public class SquareControl : MonoBehaviour {
         }*/
     }
 
-    private IEnumerator StaticTapTimeout()
+    private IEnumerator StaticTapTimeout(int fingerId)
     {
         yield return new WaitForSeconds(0.2f);
 
-        if (!gestureIsSwipeCandidate && !alreadyJumpedThisTouch)
+        if (!gestureIsSwipeCandidate && !alreadyJumpedForTouch.GetValueOrDefault(fingerId, false))
         {
-            GameSessionManager.Instance.LogToFile("TAP ESTÁTICO DETETADO APÓS 0.3s → SALTAR");
+            GameSessionManager.Instance.LogToFile("TAP ESTÁTICO DETETADO APÓS 0.2s → SALTAR");
             OnTapGesture();
-            alreadyJumpedThisTouch = true;
+            alreadyJumpedForTouch[fingerId] = true;
         }
     }
 
@@ -198,99 +206,162 @@ public class SquareControl : MonoBehaviour {
         if (UnityEngine.Input.touchCount > 0)
         {
             UnityEngine.Touch touch = UnityEngine.Input.GetTouch(0);
+            int fingerId = touch.fingerId;
 
+            // Se não temos dedo ativo, registamos este dedo ao começar o toque
             if (touch.phase == UnityEngine.TouchPhase.Began)
             {
+                activeTouchId = fingerId;
+                alreadyJumpedForTouch[fingerId] = false;
+                touchStartTime = Time.time;
+                stationaryTouchCount = 0;
                 earlyTouchPositions.Clear();
                 earlyTouchPositions.Add(touch.position);
                 gestureIsSwipeCandidate = false;
-                alreadyJumpedThisTouch = false;
                 startTouchTime = Time.time;
 
-                GameSessionManager.Instance.LogToFile("TOQUE COMEÇADO");
+                GameSessionManager.Instance.LogToFile($"TOQUE COMEÇADO (fingerId={fingerId})");
 
-                // Iniciar coroutine para tap estático (tap sem mover)
                 if (tapTimeoutCoroutine != null) StopCoroutine(tapTimeoutCoroutine);
-                tapTimeoutCoroutine = StartCoroutine(StaticTapTimeout());
-            }
-            else if (touch.phase == UnityEngine.TouchPhase.Moved)
-            {
-                if (earlyTouchPositions.Count < requiredPoints)
-                {
-                    earlyTouchPositions.Add(touch.position);
+                tapTimeoutCoroutine = StartCoroutine(StaticTapTimeout(fingerId));
 
-                    if (earlyTouchPositions.Count == requiredPoints)
+            }
+            else
+            {
+                // Se este evento não é do dedo ativo, ignorar tudo
+                if (activeTouchId == null || fingerId != activeTouchId)
+                {
+                    GameSessionManager.Instance.LogToFile($"IGNORAR evento do fingerId={fingerId}, ativo={activeTouchId}");
+                    return;
+                }
+
+                // Agora processamos só o dedo ativo
+                if (touch.phase == UnityEngine.TouchPhase.Stationary)
+                {
+                    stationaryTouchCount++;
+                    GameSessionManager.Instance.LogToFile($"Touch estático detetado (count={stationaryTouchCount})");
+
+                    if (stationaryTouchCount >= stationaryTouchThreshold && !alreadyJumpedForTouch.GetValueOrDefault(fingerId, false))
                     {
-                        Vector2 delta = earlyTouchPositions[2] - earlyTouchPositions[0];
+                        float timeHeld = Time.time - touchStartTime;
+                        GameSessionManager.Instance.LogToFile($"TOQUE ESTÁTICO DETETADO DURANTE VÁRIOS FRAMES → SALTAR ({timeHeld})");
+                        OnTapGesture();
+                        alreadyJumpedForTouch[fingerId] = true;
+                        stationaryTouchCount = 0;
+
+                        if (tapTimeoutCoroutine != null)
+                        {
+                            StopCoroutine(tapTimeoutCoroutine);
+                            tapTimeoutCoroutine = null;
+                        }
+
+                        // Limpar dados para não detetar swipe logo após salto
+                        gestureIsSwipeCandidate = false;
+                        earlyTouchPositions.Clear();
+                    }
+                }
+                else if (touch.phase == UnityEngine.TouchPhase.Moved)
+                {
+                    stationaryTouchCount = 0;
+                    if (alreadyJumpedForTouch.GetValueOrDefault(fingerId, false))
+                    {
+                        GameSessionManager.Instance.LogToFile($"MOVIMENTO IGNORADO → JÁ FOI FEITO UM SALTO NESTE TOQUE (fingerId={fingerId})");
+                        return;
+                    }
+
+                    GameSessionManager.Instance.LogToFile("Contagem de toques estáticos CANCELADA POR MOVIMENTO → NÃO É TAP ESTÁTICO");
+                    if (earlyTouchPositions.Count < requiredPoints)
+                    {
+                        earlyTouchPositions.Add(touch.position);
+
+                        if (earlyTouchPositions.Count == requiredPoints)
+                        {
+                            Vector2 delta = earlyTouchPositions[2] - earlyTouchPositions[0];
+                            float distance = delta.magnitude;
+                            float duration = Time.time - startTouchTime;
+                            float speed = distance / duration;
+
+                            bool isFast = speed > 500f;
+                            bool isVertical = Mathf.Abs(delta.y) > Mathf.Abs(delta.x);
+                            bool isUpward = delta.y > 0;
+
+                            if (isFast && isVertical && isUpward)
+                            {
+                                gestureIsSwipeCandidate = true;
+                                GameSessionManager.Instance.LogToFile($"POTENCIAL SWIPE DETETADO (speed={speed:F1}) → AGUARDAR FIM");
+                            }
+                            else if (duration < 0.5f && speed < 200f && !alreadyJumpedForTouch.GetValueOrDefault(fingerId, false))
+                            {
+                                GameSessionManager.Instance.LogToFile($"TAP DETETADO COM POUCA VELOCIDADE (speed={speed:F1}) → SALTAR JÁ");
+                                OnTapGesture();
+                                alreadyJumpedForTouch[fingerId] = true;
+
+                                // Limpar dados após salto
+                                gestureIsSwipeCandidate = false;
+                                earlyTouchPositions.Clear();
+                            }
+                        }
+                    }
+                }
+                else if (touch.phase == UnityEngine.TouchPhase.Ended)
+                {
+                    stationaryTouchCount = 0;
+
+                    if (alreadyJumpedForTouch.GetValueOrDefault(fingerId, false))
+                    {
+                        GameSessionManager.Instance.LogToFile($"IGNORAR SWIPE OU TAP FINAL → JÁ FOI FEITO UM SALTO (fingerId={fingerId})");
+                        activeTouchId = null;
+                        return;
+                    }
+
+                    if (tapTimeoutCoroutine != null)
+                    {
+                        StopCoroutine(tapTimeoutCoroutine);
+                        tapTimeoutCoroutine = null;
+                    }
+
+                    Vector2 endPos = touch.position;
+
+                    if (gestureIsSwipeCandidate)
+                    {
+                        Vector2 swipeVector = endPos - earlyTouchPositions[0];
+
+                        if (swipeVector.y > Mathf.Abs(swipeVector.x) && swipeVector.y > 50f && !alreadyJumpedForTouch.GetValueOrDefault(fingerId, false))
+                        {
+                            GameSessionManager.Instance.LogToFile($"SWIPE PARA CIMA CONFIRMADO → LANÇAR FIREBALL (fingerId={fingerId})");
+                            OnSwipeUpGesture();
+                        }
+                        else
+                        {
+                            GameSessionManager.Instance.LogToFile("SWIPE MAL DIRECIONADO NO FIM → IGNORAR");
+                        }
+                    }
+                    else
+                    {
+                        Vector2 delta = endPos - earlyTouchPositions[0];
                         float distance = delta.magnitude;
                         float duration = Time.time - startTouchTime;
                         float speed = distance / duration;
 
-                        bool isFast = speed > 500f;
-                        bool isVertical = Mathf.Abs(delta.y) > Mathf.Abs(delta.x);
-                        bool isUpward = delta.y > 0;
-
-                        if (isFast && isVertical && isUpward)
+                        if (duration < 0.5f && speed < 200f)
                         {
-                            gestureIsSwipeCandidate = true;
-                            GameSessionManager.Instance.LogToFile($"POTENCIAL SWIPE DETETADO (speed={speed:F1}) → AGUARDAR FIM");
-                        }
-                        else if (duration < 0.5f && speed < 200f && !alreadyJumpedThisTouch)
-                        {
-                            // TAP identificado com pouco movimento
-                            GameSessionManager.Instance.LogToFile($"TAP DETETADO COM POUCA VELOCIDADE (speed={speed:F1}) → SALTAR JÁ");
+                            GameSessionManager.Instance.LogToFile($"TAP CURTO NO ENDED (speed={speed:F1}) → SALTAR");
                             OnTapGesture();
-                            isTap = true;
-                            alreadyJumpedThisTouch = true;
+                            alreadyJumpedForTouch[fingerId] = true;
+                        }
+                        else
+                        {
+                            GameSessionManager.Instance.LogToFile($"GESTO DEMASIADO LENTO OU LONGO (duration={duration:F2}, speed={speed:F1}) → IGNORAR");
                         }
                     }
-                }
-            }
-            else if (touch.phase == UnityEngine.TouchPhase.Ended)
-            {
-                if (tapTimeoutCoroutine != null)
-                {
-                    StopCoroutine(tapTimeoutCoroutine);
-                    tapTimeoutCoroutine = null;
-                }
 
-                Vector2 endPos = touch.position;
-
-                if (gestureIsSwipeCandidate)
-                {
-                    Vector2 swipeVector = endPos - earlyTouchPositions[0];
-
-                    if (swipeVector.y > Mathf.Abs(swipeVector.x) && swipeVector.y > 50f)
-                    {
-                        GameSessionManager.Instance.LogToFile("SWIPE PARA CIMA CONFIRMADO → LANÇAR FIREBALL");
-                        OnSwipeUpGesture();
-                    }
-                    else //probably nao chega aqui
-                    {
-                        GameSessionManager.Instance.LogToFile("SWIPE MAL DIRECIONADO NO FIM → IGNORAR");
-                    }
-                }
-                else if (!alreadyJumpedThisTouch)
-                {
-                    // Só se não tiver sido já considerado TAP antes
-                    Vector2 delta = endPos - earlyTouchPositions[0];
-                    float distance = delta.magnitude;
-                    float duration = Time.time - startTouchTime;
-                    float speed = distance / duration;
-
-                    if (duration < 0.5f && speed < 200f)
-                    {
-                        GameSessionManager.Instance.LogToFile($"TAP CURTO NO ENDED (speed={speed:F1}) → SALTAR");
-                        OnTapGesture();
-                    }
-                    else //probably nao chega aqui
-                    {
-                        GameSessionManager.Instance.LogToFile($"GESTO DEMASIADO LENTO OU LONGO (duration={duration:F2}, speed={speed:F1}) → IGNORAR");
-                    }
+                    activeTouchId = null; // Reset quando o toque acaba
                 }
             }
         }
     }
+
+
 
     public void OnTapGesture()
     {
@@ -346,13 +417,12 @@ public class SquareControl : MonoBehaviour {
         Vector2 swipeVector = endPos - startPos;
         if (swipeVector.y > Mathf.Abs(swipeVector.x) && swipeVector.y > 50f)
         {
-            GameSessionManager.Instance.LogToFile("SWIPE PARA CIMA CONFIRMADO → LANÇAR FIREBALL");
-            OnSwipeUpGesture();
+            GameSessionManager.Instance.LogToFile("SWIPE PARA CIMA → NÃO É TAP"); 
             isTap = false;
         }
-        else if (swipeVector.magnitude > 10f) // podes ajustar este threshold
+        else if (swipeVector.magnitude > 10f)
         {
-            GameSessionManager.Instance.LogToFile("SWIPE MAL DIRECIONADO NO FIM → IGNORAR");
+            GameSessionManager.Instance.LogToFile("SWIPE MAL DIRECIONADO → NÃO É TAP");
             isTap = false;
         }
 
