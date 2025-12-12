@@ -19,9 +19,9 @@ This game was developed as part of a **Master’s thesis** focused on **Game Int
 
 These logs are later analyzed to study patterns in player behavior and consistency across different games and play styles.
 
-## 🎨 Credits
+## 🎨 Assets
 
-All used assets (sounds, music, sprites, etc.) are **free-to-use** and will be properly credited here. *(Credits coming soon)*
+All used assets (sounds, music, sprites, etc.) are **free-to-use**.
 
 ## 🔧 Built With
 
