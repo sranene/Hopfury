@@ -11,9 +11,9 @@
 ## Screenshots
 
 <p align="center">
-  <img src="[URL1](https://github.com/user-attachments/assets/b77986c1-4a44-4b21-941d-f7ff89f69236)" width="250"/>
-  <img src="[URL2](https://github.com/user-attachments/assets/a9e3a442-e391-4cab-8d23-8931fe961930)" width="250"/>
-  <img src="[URL3](https://github.com/user-attachments/assets/7c7a9326-1a81-480c-8913-78041d0e295f)" width="250"/>
+  <img src="https://github.com/user-attachments/assets/b77986c1-4a44-4b21-941d-f7ff89f69236" width="250"/>
+  <img src="https://github.com/user-attachments/assets/a9e3a442-e391-4cab-8d23-8931fe961930" width="250"/>
+  <img src="https://github.com/user-attachments/assets/7c7a9326-1a81-480c-8913-78041d0e295f" width="250"/>
 </p>
 
 ## Research Purpose
