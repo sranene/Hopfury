@@ -2,13 +2,19 @@
 
 **Hopfury** is a 2D mobile platformer where you jump over platforms and enemies, shoot fireballs to defeat enemys (with cooldown), and enjoy the unique beats of each level. Simple controls, satisfying action, and a simple and clean design make it both fun and engaging.
 
-## 🎮 Gameplay
+## Gameplay
 
 - Tap to **jump** over obstacles and enemies
 - Swipe up to **launch fireballs** with a cooldown
 - Avoid obstacles, defeat enemies, and reach the end of each level
 
-## 📊 Research Purpose
+## Screenshots
+
+<img width="715" height="1439" alt="image" src="https://github.com/user-attachments/assets/b77986c1-4a44-4b21-941d-f7ff89f69236" />
+<img width="713" height="1439" alt="image" src="https://github.com/user-attachments/assets/a9e3a442-e391-4cab-8d23-8931fe961930" />
+<img width="713" height="1439" alt="image" src="https://github.com/user-attachments/assets/7c7a9326-1a81-480c-8913-78041d0e295f" />
+
+## Research Purpose
 
 This game was developed as part of a **Master’s thesis** focused on **Game Interaction Primitives**. It records player interactions, including:
 
@@ -19,17 +25,17 @@ This game was developed as part of a **Master’s thesis** focused on **Game Int
 
 These logs are later analyzed to study patterns in player behavior and consistency across different games and play styles.
 
-## 🎨 Assets
+## Assets
 
 All used assets (sounds, music, sprites, etc.) are **free-to-use**.
 
-## 🔧 Built With
+## Built With
 
 - Unity (2D)
 - C#
 - Targeted for Android (mobile)
 
-## 👩‍💻 Author
+## Author
 
 Developed by [@sranene](https://github.com/sranene) as part of a game research project.
 
