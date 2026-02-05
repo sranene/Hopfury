@@ -42,5 +42,5 @@ All used assets (sounds, music, sprites, etc.) are **free-to-use**.
 
 ## Author
 
-Developed by [@sranene](https://github.com/sranene) as part of a game research project.
+Inês Marques
 
